@@ -6,6 +6,9 @@ import {
 } from 'lucide-react';
 import { OrganizationTwin } from './pages/OrganizationTwin';
 import { CompareFutures } from './pages/CompareFutures';
+import { ScenarioLab } from './pages/ScenarioLab';
+import { SimulationHistory } from './pages/SimulationHistory';
+import { SettingsPage } from './pages/Settings';
 import './index.css';
 
 type Page = 'overview' | 'twin' | 'scenario' | 'compare' | 'history' | 'integrations' | 'settings';
@@ -56,15 +59,15 @@ function App() {
       case 'overview':
         return <OverviewPage health={health} />;
       case 'scenario':
-        return <PlaceholderPage title="Scenario Lab" description="Create and manage parallel scenarios" />;
+        return <ScenarioLab />;
       case 'compare':
         return <CompareFutures />;
       case 'history':
-        return <PlaceholderPage title="Simulation History" description="Historical simulation runs and results" />;
+        return <SimulationHistory />;
+      case 'settings':
+        return <SettingsPage />;
       case 'integrations':
         return <PlaceholderPage title="Integrations" description="Jira, Confluence, Rovo, NVIDIA NIM connections" />;
-      case 'settings':
-        return <PlaceholderPage title="Settings" description="Application configuration and preferences" />;
       default:
         return <OverviewPage health={health} />;
     }

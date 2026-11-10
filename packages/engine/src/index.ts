@@ -8,6 +8,7 @@ export * from './comparison';
 export * from './demo';
 export * from './ai';
 export * from './services';
+export * from './errors';
 
 // Re-export simulation types that override entities
 export {

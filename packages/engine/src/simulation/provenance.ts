@@ -1,6 +1,6 @@
 // packages/engine/src/simulation/provenance.ts
 
-import { ProvenanceRecord, AssumptionRef, EntityId, ValueSource } from '../engine/types';
+import { ProvenanceRecord, AssumptionRef, EntityId, ValueSource } from '../../entities/types';
 
 /**
  * Create a provenance record for a calculation
