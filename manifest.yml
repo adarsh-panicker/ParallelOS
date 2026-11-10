@@ -1,0 +1,25 @@
+app:
+  id: ari:cloud:ecosystem::app/parallelos-codegeist-2026
+  runtime:
+    name: nodejs24.x
+permissions:
+  scopes:
+    - storage:app
+  external:
+    fetch:
+      backend:
+        - 'integrate.api.nvidia.com'
+modules:
+  jira:globalPage:
+    - key: parallelos-main
+      title: ParallelOS
+      resource: main
+      resolver:
+        function: resolver
+      icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
+  function:
+    - key: resolver
+      handler: index.handler
+resources:
+  - key: main
+    path: static/hello-world/build

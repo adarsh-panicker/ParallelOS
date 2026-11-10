@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+static/hello-world/node_modules/
+
+# Build outputs
+dist/
+static/hello-world/build/
+static/hello-world/dist/
+
+# Forge
+forge.log
+*.forge/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
