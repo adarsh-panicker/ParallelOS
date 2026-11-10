@@ -6,10 +6,9 @@ import {
   Criticality,
   EntityId,
   RelationshipId,
-  DecisionType,
-} from '../entities/types';
-import { Relationship, PropagationRule, PropagationContext, RedundancyInfo } from '../relationships/types';
-import { SimulationContext, AffectedEntity, DependencyPathStep, FrontierItem, SimulationDecision } from './types';
+} from '../../entities/types';
+import { Relationship, PropagationRule, PropagationContext, RedundancyInfo } from '../../relationships/types';
+import { SimulationExecutionContext, AffectedEntity, DependencyPathStep, FrontierItem, SimulationDecision } from '../engine/types';
 
 /**
  * Default propagation rules for each relationship type
@@ -17,93 +16,93 @@ import { SimulationContext, AffectedEntity, DependencyPathStep, FrontierItem, Si
 export const PROPAGATION_RULES: PropagationRule[] = [
   // Organizational
   {
-    relationshipType: RelationshipType.BelongsTo,
+    relationshipType: 'belongs_to',
     baseFactor: 0.8,
     reverseFlow: true,
-    calculateFactor: (rel, ctx) => rel.dependencyStrength === DependencyStrength.Hard ? 0.9 : 0.5,
+    calculateFactor: (rel, ctx) => rel.dependencyStrength === 'hard' ? 0.9 : 0.5,
   },
   {
-    relationshipType: RelationshipType.Manages,
+    relationshipType: 'manages',
     baseFactor: 0.6,
     reverseFlow: true,
     calculateFactor: () => 0.5,
   },
   {
-    relationshipType: RelationshipType.Owns,
+    relationshipType: 'owns',
     baseFactor: 0.9,
     reverseFlow: false,
-    calculateFactor: (rel) => rel.dependencyStrength === DependencyStrength.Hard ? 0.95 : 0.7,
+    calculateFactor: (rel) => rel.dependencyStrength === 'hard' ? 0.95 : 0.7,
   },
-  
+
   // Project & Process
   {
-    relationshipType: RelationshipType.DependsOn,
+    relationshipType: 'depends_on',
     baseFactor: 1.0,
     reverseFlow: false,
-    calculateFactor: (rel) => rel.dependencyStrength === DependencyStrength.Hard ? 1.0 : 0.6,
+    calculateFactor: (rel) => rel.dependencyStrength === 'hard' ? 1.0 : 0.6,
   },
   {
-    relationshipType: RelationshipType.Blocks,
+    relationshipType: 'blocks',
     baseFactor: 1.0,
     reverseFlow: false,
     calculateFactor: () => 1.0,
   },
   {
-    relationshipType: RelationshipType.Feeds,
+    relationshipType: 'feeds',
     baseFactor: 0.8,
     reverseFlow: false,
     calculateFactor: () => 0.8,
   },
-  
+
   // System & Infrastructure
   {
-    relationshipType: RelationshipType.RunsOn,
+    relationshipType: 'runs_on',
     baseFactor: 1.0,
     reverseFlow: true,
     calculateFactor: (rel) => calculateRunsOnFactor(rel),
   },
   {
-    relationshipType: RelationshipType.Hosts,
+    relationshipType: 'hosts',
     baseFactor: 0.7,
     reverseFlow: false,
     calculateFactor: () => 0.7,
   },
   {
-    relationshipType: RelationshipType.ConnectsTo,
+    relationshipType: 'connects_to',
     baseFactor: 0.5,
     reverseFlow: true,
     calculateFactor: () => 0.5,
   },
   {
-    relationshipType: RelationshipType.SuppliedBy,
+    relationshipType: 'supplied_by',
     baseFactor: 0.6,
     reverseFlow: true,
     calculateFactor: () => 0.6,
   },
-  
+
   // Location
   {
-    relationshipType: RelationshipType.LocatedAt,
+    relationshipType: 'located_at',
     baseFactor: 0.4,
     reverseFlow: true,
     calculateFactor: () => 0.4,
   },
   {
-    relationshipType: RelationshipType.Serves,
+    relationshipType: 'serves',
     baseFactor: 0.5,
     reverseFlow: false,
     calculateFactor: () => 0.5,
   },
-  
+
   // Financial
   {
-    relationshipType: RelationshipType.Funds,
+    relationshipType: 'funds',
     baseFactor: 0.9,
     reverseFlow: false,
     calculateFactor: () => 0.9,
   },
   {
-    relationshipType: RelationshipType.AllocatedTo,
+    relationshipType: 'allocated_to',
     baseFactor: 0.8,
     reverseFlow: false,
     calculateFactor: () => 0.8,
@@ -111,7 +110,7 @@ export const PROPAGATION_RULES: PropagationRule[] = [
 ];
 
 const DEFAULT_PROPAGATION_RULE: PropagationRule = {
-  relationshipType: RelationshipType.Custom,
+  relationshipType: 'custom',
   baseFactor: 0.5,
   reverseFlow: false,
   calculateFactor: () => 0.5,
@@ -123,7 +122,7 @@ const DEFAULT_PROPAGATION_RULE: PropagationRule = {
 function calculateRunsOnFactor(rel: Relationship): number {
   const redundancy = rel.redundancyInfo;
   if (!redundancy?.hasRedundancy) return 1.0;
-  
+
   switch (redundancy.redundancyType) {
     case 'active-active':
       return 0.1;
@@ -148,7 +147,7 @@ export function applyRedundancyMitigation(
 ): number {
   const redundancy = relationship.redundancyInfo;
   if (!redundancy?.hasRedundancy) return factor;
-  
+
   let mitigation = 1.0;
   switch (redundancy.redundancyType) {
     case 'active-active':
@@ -166,18 +165,18 @@ export function applyRedundancyMitigation(
     default:
       mitigation = 0.5;
   }
-  
-  const capacityFactor = redundancy.failoverCapacityPercent 
-    ? (1 - redundancy.failoverCapacityPercent / 100) 
+
+  const capacityFactor = redundancy.failoverCapacityPercent
+    ? (1 - redundancy.failoverCapacityPercent / 100)
     : 0.5;
-  
+
   return factor * mitigation * capacityFactor;
 }
 
 /**
  * Get propagation rule for relationship type
  */
-export function getPropagationRule(relationshipType: RelationshipType): PropagationRule {
+export function getPropagationRule(relationshipType: string): PropagationRule {
   return PROPAGATION_RULES.find(r => r.relationshipType === relationshipType) || DEFAULT_PROPAGATION_RULE;
 }
 
@@ -187,10 +186,10 @@ export function getPropagationRule(relationshipType: RelationshipType): Propagat
 export function createDirectImpact(
   entity: any,
   decision: SimulationDecision,
-  context: SimulationContext
-): AffectedEntity {
+  context: SimulationExecutionContext
+): any {
   const severity = calculateImpactSeverity(decision, entity);
-  
+
   return {
     entityId: entity.id,
     entityType: entity.type,
@@ -221,10 +220,10 @@ export function createIndirectImpact(
   triggeringDecisionId: string,
   path: DependencyPathStep[],
   propagationFactor: number,
-  context: SimulationContext
-): AffectedEntity {
+  context: SimulationExecutionContext
+): any {
   const severity = propagateSeverity(path[path.length - 1]?.sourceEntityId, propagationFactor, context);
-  
+
   return {
     entityId: targetEntity.id,
     entityType: targetEntity.type,
@@ -250,23 +249,22 @@ export function createIndirectImpact(
 /**
  * Calculate impact severity based on decision and entity
  */
-function calculateImpactSeverity(decision: SimulationDecision, entity: any): Criticality {
-  // Simplified - in reality would use decision parameters and entity properties
+function calculateImpactSeverity(decision: any, entity: any): 'low' | 'medium' | 'high' | 'critical' {
   switch (decision.type) {
-    case DecisionType.BudgetChange:
-      const percentChange = Math.abs(decision.parameters.percentChange as number || 0);
-      if (percentChange > 30) return Criticality.Critical;
-      if (percentChange > 15) return Criticality.High;
-      if (percentChange > 5) return Criticality.Medium;
-      return Criticality.Low;
-    case DecisionType.SystemOutage:
-      return Criticality.Critical;
-    case DecisionType.ReplaceSystem:
-      return Criticality.High;
-    case DecisionType.RestructureDepartment:
-      return Criticality.High;
+    case 'budget_change':
+      const percentChange = Math.abs(decision.parameters.percentChange || 0);
+      if (percentChange > 30) return 'critical';
+      if (percentChange > 15) return 'high';
+      if (percentChange > 5) return 'medium';
+      return 'low';
+    case 'system_outage':
+      return 'critical';
+    case 'replace_system':
+      return 'high';
+    case 'restructure_department':
+      return 'high';
     default:
-      return Criticality.Medium;
+      return 'medium';
   }
 }
 
@@ -274,37 +272,37 @@ function calculateImpactSeverity(decision: SimulationDecision, entity: any): Cri
  * Propagate severity through dependency path
  */
 function propagateSeverity(
-  sourceEntityId: EntityId,
+  sourceEntityId: string,
   propagationFactor: number,
-  context: SimulationContext
-): Criticality {
+  context: any
+): 'low' | 'medium' | 'high' | 'critical' {
   const sourceImpact = context.affectedEntities.get(sourceEntityId);
-  if (!sourceImpact) return Criticality.Low;
-  
-  const severityOrder = [Criticality.Low, Criticality.Medium, Criticality.High, Criticality.Critical];
+  if (!sourceImpact) return 'low';
+
+  const severityOrder = ['low', 'medium', 'high', 'critical'];
   const sourceIndex = severityOrder.indexOf(sourceImpact.impactSeverity);
   const propagatedIndex = Math.max(0, sourceIndex - Math.ceil((1 - propagationFactor) * 3));
-  
+
   return severityOrder[propagatedIndex];
 }
 
 /**
  * Check if new impact is more severe than existing
  */
-export function isMoreSevere(newImpact: AffectedEntity, existingImpact: AffectedEntity): boolean {
-  const severityOrder = [Criticality.Low, Criticality.Medium, Criticality.High, Criticality.Critical];
+export function isMoreSevere(newImpact: any, existingImpact: any): boolean {
+  const severityOrder = ['low', 'medium', 'high', 'critical'];
   return severityOrder.indexOf(newImpact.impactSeverity) > severityOrder.indexOf(existingImpact.impactSeverity);
 }
 
 /**
  * Main propagation algorithm
  */
-export function propagateImpacts(context: SimulationContext): Map<EntityId, AffectedEntity> {
-  const frontier: FrontierItem[] = [];
-  const visited = new Map<EntityId, number>();
-  const affected = new Map<EntityId, AffectedEntity>();
-  
-  // Initialize frontier with directly affected entities
+export function propagateImpacts(context: any): Map<string, any> {
+  const frontier: any[] = [];
+  const visited = new Map<string, number>();
+  const affected = new Map<string, any>();
+
+  // Initialize frontier with directly affected entities from decisions
   for (const decision of context.decisions) {
     for (const targetId of decision.targetEntityIds) {
       const entity = context.entities.get(targetId);
@@ -314,90 +312,88 @@ export function propagateImpacts(context: SimulationContext): Map<EntityId, Affe
         frontier.push({ entityId: targetId, impact, path: [], depth: 0 });
       }
     }
-  }
-  
-  // BFS propagation
-  while (frontier.length > 0) {
-    const current = frontier.shift()!;
-    
-    // Cycle detection
-    const visitCount = visited.get(current.entityId) || 0;
-    if (visitCount >= context.maxIterations) {
-      // Record cycle detected - in production would add to warnings
-      continue;
-    }
-    visited.set(current.entityId, visitCount + 1);
-    
-    // Depth limit
-    if (current.depth >= context.maxPropagationDepth) {
-      continue;
-    }
-    
-    // Get outbound relationships
-    const outboundRelIds = context.outboundEdges.get(current.entityId) || [];
-    
-    for (const relId of outboundRelIds) {
-      const relationship = context.relationships.get(relId);
-      if (!relationship) continue;
-      
-      const targetEntity = context.entities.get(relationship.targetId);
-      if (!targetEntity) continue;
-      
-      // Get propagation rule
-      const rule = getPropagationRule(relationship.type as RelationshipType);
-      
-      // Calculate propagation factor
-      const propagationFactor = rule.calculateFactor(relationship, {
-        sourceImpact: current.impact,
-        relationship,
-        targetEntity,
-        pathSoFar: current.path,
-        globalContext: {
-          entities: context.entities,
-          relationships: context.relationships,
-        },
-      });
-      
-      // Apply redundancy mitigation
-      const mitigatedFactor = applyRedundancyMitigation(propagationFactor, relationship, current.impact);
-      
-      // Skip negligible impacts
-      if (mitigatedFactor < 0.05) continue;
-      
-      // Create path step
-      const newPathStep: DependencyPathStep = {
-        relationshipId: relId as RelationshipId,
-        sourceEntityId: current.entityId,
-        targetEntityId: relationship.targetId,
-        relationshipType: relationship.type as any,
-        propagationFactor: mitigatedFactor,
-        redundancyMitigated: mitigatedFactor < propagationFactor,
-      };
-      
-      const newPath = [...current.path, newPathStep];
-      const existingImpact = affected.get(relationship.targetId);
-      
-      if (!existingImpact || isMoreSevere(
-        { ...current.impact, entityId: relationship.targetId, impactType: 'indirect', dependencyPath: newPath },
-        existingImpact
-      )) {
-        const newImpact = createIndirectImpact(
+
+    // BFS propagation
+    while (frontier.length > 0) {
+      const current = frontier.shift()!;
+
+      // Cycle detection
+      const visitCount = visited.get(current.entityId) || 0;
+      if (visitCount >= context.maxIterations) {
+        continue;
+      }
+      visited.set(current.entityId, visitCount + 1);
+
+      // Depth limit
+      if (current.depth >= context.maxPropagationDepth) {
+        continue;
+      }
+
+      // Get outbound relationships
+      const outboundRelIds = context.outboundEdges.get(current.entityId) || [];
+
+      for (const relId of outboundRelIds) {
+        const relationship = context.relationships.get(relId);
+        if (!relationship) continue;
+
+        const targetEntity = context.entities.get(relationship.targetId);
+        if (!targetEntity) continue;
+
+        // Get propagation rule
+        const rule = getPropagationRule(relationship.type);
+
+        // Calculate propagation factor
+        const propagationFactor = rule.calculateFactor(relationship, {
+          sourceImpact: current.impact,
+          relationship,
           targetEntity,
-          current.impact.triggeringDecisionId,
-          newPath,
-          mitigatedFactor,
-          context
-        );
-        affected.set(relationship.targetId, newImpact);
-        frontier.push({
-          entityId: relationship.targetId,
-          impact: newImpact,
-          path: newPath,
-          depth: current.depth + 1,
+          pathSoFar: current.path,
+          globalContext: context,
         });
+
+        // Apply redundancy mitigation
+        const mitigatedFactor = applyRedundancyMitigation(propagationFactor, relationship, current.impact);
+
+        if (mitigatedFactor < 0.05) continue; // Threshold: negligible impact
+
+        // Create path step
+        const newPathStep = {
+          relationshipId: relId,
+          sourceEntityId: current.entityId,
+          targetEntityId: relationship.targetId,
+          relationshipType: relationship.type,
+          propagationFactor: mitigatedFactor,
+          redundancyMitigated: mitigatedFactor < propagationFactor,
+        };
+
+        const newPath = [...current.path, newPathStep];
+        const existingImpact = affected.get(relationship.targetId);
+
+        if (!existingImpact || isMoreSevere(
+          { ...current.impact, entityId: relationship.targetId, impactType: 'indirect', dependencyPath: newPath },
+          existingImpact
+        )) {
+          const newImpact = createIndirectImpact(
+            targetEntity,
+            current.impact.triggeringDecisionId,
+            newPath,
+            mitigatedFactor,
+            context
+          );
+          affected.set(relationship.targetId, newImpact);
+          frontier.push({
+            entityId: relationship.targetId,
+            impact: newImpact,
+            path: newPath,
+            depth: current.depth + 1,
+          });
+        }
       }
     }
+
+    return affected;
   }
-  
-  return affected;
 }
+
+// Re-export types
+export * from './types';

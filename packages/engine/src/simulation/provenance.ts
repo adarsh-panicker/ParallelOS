@@ -1,6 +1,6 @@
 // packages/engine/src/simulation/provenance.ts
 
-import { ProvenanceRecord, AssumptionRef, EntityId, ValueSource, UnknownValue, isUnknown, unknown } from './types';
+import { ProvenanceRecord, AssumptionRef, EntityId, ValueSource } from '../engine/types';
 
 /**
  * Create a provenance record for a calculation
@@ -37,7 +37,7 @@ export function mergeProvenance(records: ProvenanceRecord[]): ProvenanceRecord {
     throw new Error('Cannot merge empty provenance records');
   }
   if (records.length === 1) return records[0];
-  
+
   return {
     triggeringDecision: records[0].triggeringDecision,
     affectedEntity: records[0].affectedEntity,
@@ -59,27 +59,35 @@ export function createAssumptionRef(
   key: string,
   value: unknown,
   source: ValueSource
-): AssumptionRef {
+): any {
   return { assumptionId, key, value, source };
 }
 
 /**
- * Unknown value handling - re-export from types
+ * Unknown value handling
  */
-export { UnknownValue, unknown, isUnknown };
+export type UnknownValue<T> = T | 'unknown';
 
-export function safeGetProperty<T>(obj: Record<string, unknown>, key: string): UnknownValue<T> {
+export function unknown<T>(reason?: string): UnknownValue<T> {
+  return 'unknown';
+}
+
+export function isUnknown<T>(val: UnknownValue<T>): val is 'unknown' {
+  return val === 'unknown';
+}
+
+export function safeGetProperty<T>(obj: Record<string, unknown>, key: string): any {
   if (!(key in obj)) {
     return unknown(`Property '${key}' not found`);
   }
   return obj[key] as T;
 }
 
-export function propagateWithUnknowns<T>(values: UnknownValue<T>[], combiner: (vals: T[]) => T): UnknownValue<T> {
+export function propagateWithUnknowns<T>(values: any[], combiner: (vals: T[]) => T): any {
   const resolved: T[] = [];
   for (const val of values) {
-    if (isUnknown(val)) {
-      return unknown('Input contains unknown value');
+    if (val === 'unknown') {
+      return 'unknown';
     }
     resolved.push(val);
   }
