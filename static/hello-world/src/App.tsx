@@ -5,6 +5,7 @@ import {
   Building2, Building, Handshake, Server, Database 
 } from 'lucide-react';
 import { OrganizationTwin } from './pages/OrganizationTwin';
+import { CompareFutures } from './pages/CompareFutures';
 import './index.css';
 
 type Page = 'overview' | 'twin' | 'scenario' | 'compare' | 'history' | 'integrations' | 'settings';
@@ -57,7 +58,7 @@ function App() {
       case 'scenario':
         return <PlaceholderPage title="Scenario Lab" description="Create and manage parallel scenarios" />;
       case 'compare':
-        return <PlaceholderPage title="Compare Futures" description="Side-by-side scenario comparison" />;
+        return <CompareFutures />;
       case 'history':
         return <PlaceholderPage title="Simulation History" description="Historical simulation runs and results" />;
       case 'integrations':

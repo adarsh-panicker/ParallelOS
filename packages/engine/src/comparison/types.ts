@@ -74,8 +74,8 @@ export const DEFAULT_DIMENSIONS: ComparisonDimension[] = [
     normalize: (value, baseline) => {
       if (baseline === 0) return 50;
       const ratio = value / baseline;
-      // Lower is better: 0 ratio = 100, 1 ratio = 50, 2 ratio = 0
-      return Math.max(0, Math.min(100, 100 - (ratio - 1) * 50));
+      // Lower is better: 0.5 ratio = 100, 1 ratio = 50, 2 ratio = 0
+      return Math.max(0, Math.min(100, 150 - ratio * 100));
     },
   },
   {

@@ -65,27 +65,30 @@
   - Copy-on-write overlays with proper merge semantics
   - Scenario isolation guarantees verified by tests
 
+- **Phase 4 Deterministic Simulation Engine completed:**
+  - Simulation types: SimulationDecision, SimulationResult, AffectedEntity, ProvenanceRecord, ProjectImpact, ResourceShortage, BudgetDelta, ProcessDisruption, UnresolvedDependency
+  - Main engine: runSimulation, buildExecutionContext, validateDecisions, createSimulationDecisions
+  - Dependency propagation: BFS with redundancy awareness (active-active, active-passive, geo-redundant, load-balanced), cycle detection, configurable depth/iterations
+  - Provenance tracking: createProvenanceRecord, mergeProvenance, unknown value handling ('unknown' sentinel, never invented)
+  - Domain calculators: budget (direct changes + propagation), resources (capacity/utilization/shortfall), projects (delay risk, resource gaps, budget impact), processes (system disruption, redundancy-adjusted recovery), mitigations (placeholder)
+  - 10 simulation tests passing (67 total tests passing)
+  - Decision validation: budget_change, add_location, replace_system, system_outage, restructure_department, reallocate_resources
+  - Vite build successful (esbuild)
+  - All tests pass (67/67)
+
+- **Phase 5 Scenario Comparison completed:**
+  - Comparison engine: 9 dimensions (operating_cost, budget_variance, resource_utilization, project_delivery, operational_resilience, process_continuity, dependency_risk, risk_exposure, implementation_complexity)
+  - Adjustable weights with preset profiles (default, cost-focus, risk-focus, delivery-focus)
+  - Difference analysis: absolute/percent differences, significance classification (negligible to critical)
+  - Trade-off visualization: strengths/risks per scenario, aggregate scores
+  - Compare Futures UI: side-by-side tables, expandable dimension details, interactive weight sliders
+  - 23 comparison tests passing (90 total tests passing)
+  - CSS module styling with dark theme
+  - Vite build successful (esbuild)
+  - All tests pass (90/90)
+
 ## In Progress
 - ESLint configuration for engine package (style issues - non-blocking)
-
-## Next (Phase 4 - Deterministic Simulation)
-- Implement decision models (budget, location, system, outage, restructure)
-- Implement dependency propagation with redundancy awareness
-- Implement domain calculators (budget, resources, projects, processes)
-- Implement provenance tracking
-- Simulation result provenance
-
-## Next (Phase 5 - Scenario Comparison)
-- Side-by-side comparison UI
-- 9 comparison dimensions with adjustable weights
-- Difference analysis and trade-off visualization
-- Simulation history and re-run capability
-
-## Next (Phase 5 - Scenario Comparison)
-- Side-by-side comparison UI
-- 9 comparison dimensions with adjustable weights
-- Difference analysis and trade-off visualization
-- Simulation history and re-run capability
 
 ## Next (Phase 6 - NVIDIA AI Integration)
 - Natural language to scenario proposal

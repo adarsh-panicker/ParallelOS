@@ -219,7 +219,7 @@ export class ComparisonEngine {
       differences.push({
         dimensionId: dimension.id,
         baselineValue: baselineVal ?? 'unknown',
-        scenarioValues,
+        scenarioValues: scenarioVals,
         absoluteDifferences: absoluteDiffs,
         percentDifferences: percentDiffs,
         significance,
