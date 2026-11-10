@@ -1,6 +1,6 @@
 // packages/engine/src/simulation/provenance.ts
 
-import { ProvenanceRecord, AssumptionRef, EntityId, ValueSource } from './types';
+import { ProvenanceRecord, AssumptionRef, EntityId, ValueSource, UnknownValue, isUnknown, unknown } from './types';
 
 /**
  * Create a provenance record for a calculation
@@ -64,17 +64,9 @@ export function createAssumptionRef(
 }
 
 /**
- * Unknown value handling
+ * Unknown value handling - re-export from types
  */
-export type UnknownValue<T> = T | 'unknown';
-
-export function unknown<T>(reason?: string): UnknownValue<T> {
-  return 'unknown';
-}
-
-export function isUnknown<T>(val: UnknownValue<T>): val is 'unknown' {
-  return val === 'unknown';
-}
+export { UnknownValue, unknown, isUnknown };
 
 export function safeGetProperty<T>(obj: Record<string, unknown>, key: string): UnknownValue<T> {
   if (!(key in obj)) {

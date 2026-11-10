@@ -6,3 +6,15 @@ export * from './scenario';
 export * from './simulation';
 export * from './comparison';
 export * from './demo';
+
+// Re-export simulation types that override entities
+export {
+  UnknownValue,
+  isUnknown,
+  unknown,
+  safeGetProperty,
+  propagateWithUnknowns,
+  createProvenanceRecord,
+  mergeProvenance,
+  createAssumptionRef,
+} from './simulation/provenance';

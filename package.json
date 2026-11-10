@@ -13,7 +13,8 @@
     "@forge/api": "^8.5.0",
     "@forge/resolver": "^2.0.2",
     "@forge/kvs": "^2.1.2",
-    "zod": "^3.22.0"
+    "zod": "^3.22.0",
+    "@parallelos/engine": "file:./packages/engine"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
