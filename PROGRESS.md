@@ -87,13 +87,19 @@
   - Vite build successful (esbuild)
   - All tests pass (90/90)
 
+- **Phase 6 NVIDIA AI Integration completed:**
+  - AI Provider abstraction: AIProvider interface with NVIDIA NIM implementation
+  - Natural language to scenario proposal: Zod-validated structured output with clarifying questions
+  - Grounded simulation explanations: Evidence-based answers using only engine outputs, provenance tracking
+  - Decision recommendations: Goal-based proposals with expected impact, risks, confidence (never auto-applied)
+  - Mock provider for testing/development
+  - 22 AI tests passing (112 total tests passing)
+  - Error handling: timeouts, retries, schema validation, rate limits
+  - Vite build successful (esbuild)
+  - All tests pass (112/112)
+
 ## In Progress
 - ESLint configuration for engine package (style issues - non-blocking)
-
-## Next (Phase 6 - NVIDIA AI Integration)
-- Natural language to scenario proposal
-- Grounded simulation explanations
-- Decision recommendations (proposals only)
 
 ## Next (Phase 7 - Atlassian & Rovo Integration)
 - Jira: import projects/issues, create remediation tasks

@@ -6,6 +6,7 @@ export * from './scenario';
 export * from './simulation';
 export * from './comparison';
 export * from './demo';
+export * from './ai';
 
 // Re-export simulation types that override entities
 export {
