@@ -1,11 +1,12 @@
 // src/functions/scenarioCrud.ts
 // Scenario CRUD operations function handler
 
-import { ForgeRequest, ForgeResponse } from '@forge/api';
-import { storage } from '@forge/api';
+import type { ForgeRequest, ForgeResponse} from './types';
+import { parseRequestBody } from './types';
+import { kvs } from '@forge/kvs';
 
 export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
-  const body = await req.json();
+  const body = await parseRequestBody(req);
   const { action, scenarioId, ...data } = body;
 
   try {
@@ -28,13 +29,13 @@ export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
           updatedAt: Date.now(),
         };
         
-        await storage.set(`scenario:${scenario.id}`, scenario);
+        await kvs.entity('scenario').set(scenario.id, scenario);
         
         return { status: 200, body: scenario };
       }
       
       case 'get': {
-        const scenario = await storage.get(`scenario:${scenarioId}`);
+        const scenario = await kvs.entity('scenario').get(scenarioId);
         if (!scenario) {
           return { status: 404, body: { error: 'Scenario not found' } };
         }
@@ -42,34 +43,32 @@ export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
       }
       
       case 'list': {
-        // In production, query storage with pagination
         return { status: 200, body: { scenarios: [] } };
       }
       
       case 'update': {
-        const existing = await storage.get(`scenario:${scenarioId}`);
+        const existing = await kvs.entity('scenario').get(scenarioId);
         if (!existing) {
           return { status: 404, body: { error: 'Scenario not found' } };
         }
         
         const updated = {
-          ...existing,
+          ...(existing as any),
           ...data,
           updatedAt: Date.now(),
         };
         
-        await storage.set(`scenario:${scenarioId}`, updated);
+        await kvs.entity('scenario').set(scenarioId, updated);
         return { status: 200, body: updated };
       }
       
       case 'delete': {
-        await storage.delete(`scenario:${scenarioId}`);
+        await kvs.entity('scenario').delete(scenarioId);
         return { status: 200, body: { success: true } };
       }
       
       case 'version': {
-        // Create version snapshot
-        const scenario = await storage.get(`scenario:${scenarioId}`);
+        const scenario = await kvs.entity('scenario').get(scenarioId);
         if (!scenario) {
           return { status: 404, body: { error: 'Scenario not found' } };
         }
@@ -78,28 +77,27 @@ export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
           id: `version-${Date.now()}`,
           scenarioId,
           label: data.label,
-          snapshot: { ...scenario },
+          snapshot: { ...(scenario as any) },
           createdAt: Date.now(),
           createdBy: 'user',
         };
         
-        await storage.set(`scenario-version:${version.id}`, version);
+        await kvs.entity('scenarioVersion').set(version.id, version);
         return { status: 200, body: version };
       }
       
       case 'restore': {
-        // Restore to version
-        const version = await storage.get(`scenario-version:${data.versionId}`);
+        const version = await kvs.entity('scenarioVersion').get(data.versionId);
         if (!version) {
           return { status: 404, body: { error: 'Version not found' } };
         }
         
-        await storage.set(`scenario:${scenarioId}`, {
-          ...version.snapshot,
+        await kvs.entity('scenario').set(scenarioId, {
+          ...(version as any).snapshot,
           updatedAt: Date.now(),
         });
         
-        return { status: 200, body: version.snapshot };
+        return { status: 200, body: (version as any).snapshot };
       }
       
       default:

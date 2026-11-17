@@ -1,23 +1,19 @@
 // src/functions/simulationEngine.ts
 // Simulation engine function handler
 
-import { ForgeRequest, ForgeResponse } from '@forge/api';
+import type { ForgeRequest, ForgeResponse} from './types';
+import { parseRequestBody } from './types';
 import { 
   buildSimulationContext, 
   runSimulation, 
-  SimulationDecision,
-  DecisionType,
-  EntityId
-} from '../../engine/src';
+  loadAureliaDemo,
+} from '@parallelos/engine';
 
 export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
-  const body = await req.json();
-  const { scenarioId, decisions } = body;
+  const body = await parseRequestBody(req);
+  const { scenarioId: _scenarioId, decisions = [] } = body;
 
   try {
-    // In production, fetch scenario data from storage
-    // For now, use demo data
-    const { loadAureliaDemo } = await import('../../engine/src/demo');
     const demo = loadAureliaDemo();
     
     const entities = new Map<string, any>();

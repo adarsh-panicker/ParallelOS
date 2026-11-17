@@ -59,10 +59,10 @@ export class ConfluenceService {
     if (!response.ok) {
       let errorMessage = `Confluence API error: ${response.status}`;
       try {
-        const errorBody = await response.json();
+        const errorBody = (await response.json()) as any;
         errorMessage = errorBody.message || errorMessage;
       } catch {
-        errorMessage = await response.text() || errorMessage;
+        errorMessage = (await response.text()) || errorMessage;
       }
       
       const code = this.mapStatusCode(response.status);
@@ -73,7 +73,7 @@ export class ConfluenceService {
       return {} as T;
     }
 
-    return response.json();
+    return (await response.json()) as T;
   }
 
   private mapStatusCode(status: number): ConfluenceError['code'] {

@@ -3,8 +3,10 @@ import { invoke } from '@forge/bridge';
 import {
   Settings, User, Shield, Bell, Palette, Monitor, Key,
   Database, Cloud, Terminal, Save, RotateCcw, Trash2,
-  Check, X, AlertCircle, Info, HelpCircle, ExternalLink, Upload, Loader2, Download
+  Check, X, AlertCircle, Info, HelpCircle, ExternalLink, Upload, Loader2, Download,
+  Award, Sparkles
 } from 'lucide-react';
+import { Logo } from '../components/Logo';
 import styles from './styles/Settings.module.css';
 
 interface AppSettings {
@@ -45,7 +47,7 @@ interface UserProfile {
   organization: string;
 }
 
-type TabId = 'general' | 'appearance' | 'notifications' | 'privacy' | 'ai' | 'integrations' | 'advanced';
+type TabId = 'general' | 'appearance' | 'notifications' | 'privacy' | 'ai' | 'integrations' | 'advanced' | 'about';
 
 interface TabConfig {
   id: TabId;
@@ -61,6 +63,7 @@ const tabs = [
   { id: 'ai', label: 'AI Settings', icon: <Terminal size={20} /> },
   { id: 'integrations', label: 'Integrations', icon: <Cloud size={20} /> },
   { id: 'advanced', label: 'Advanced', icon: <Terminal size={20} /> },
+  { id: 'about', label: 'About & Creator', icon: <Info size={20} /> },
 ];
 
 export function SettingsPage() {
@@ -198,194 +201,7 @@ export function SettingsPage() {
           {activeTab === 'ai' && <AISettings settings={settings} onChange={updateNestedSetting} />}
           {activeTab === 'integrations' && <IntegrationSettings settings={settings} onChange={updateNestedSetting} />}
           {activeTab === 'advanced' && <AdvancedSettings settings={settings} onChange={updateSetting} onReset={handleReset} onDelete={handleDeleteConfirm} showResetConfirm={showResetConfirm} setShowResetConfirm={setShowResetConfirm} showDeleteConfirm={showDeleteConfirm} setShowDeleteConfirm={setShowDeleteConfirm} />}
-        </div>
-      </div>
-
-      {saved && (
-        <div className={styles.successBanner} role="status">
-          <Check size={18} />
-          <span>Settings saved successfully</span>
-        </div>
-      )}
-
-      {error && (
-        <div className={styles.errorBanner} role="alert">
-          <AlertCircle size={18} />
-          <span>{error}</span>
-          <button onClick={() => setError(null)} aria-label="Dismiss error">
-            <X size={16} />
-          </button>
-        </div>
-      )}
-
-      <div className={styles.settingsLayout}>
-        <nav className={styles.settingsSidebar} aria-label="Settings categories">
-          <ul role="tablist">
-            {tabs.map(tab => (
-              <li key={tab.id} role="tab" aria-selected={activeTab === tab.id}>
-                <button
-                  className={`${styles.tabButton} ${activeTab === tab.id ? styles.active : ''}`}
-                  onClick={() => setActiveTab(tab.id as TabId)}
-                  role="tab"
-                  aria-selected={activeTab === tab.id}
-                >
-                  {tab.icon}
-                  <span>{tab.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className={styles.settingsContent} role="tabpanel" aria-labelledby={`${activeTab}-tab`}>
-          {activeTab === 'general' && <GeneralSettings settings={settings} onChange={updateSetting} profile={profile} setProfile={setProfile} />}
-          {activeTab === 'appearance' && <AppearanceSettings settings={settings} onChange={updateSetting} />}
-          {activeTab === 'notifications' && <NotificationSettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'privacy' && <PrivacySettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'ai' && <AISettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'integrations' && <IntegrationSettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'advanced' && <AdvancedSettings settings={settings} onChange={updateSetting} onReset={handleReset} onDelete={handleDeleteConfirm} showResetConfirm={showResetConfirm} setShowResetConfirm={setShowResetConfirm} showDeleteConfirm={showDeleteConfirm} setShowDeleteConfirm={setShowDeleteConfirm} />}
-        </div>
-      </div>
-
-      {saved && (
-        <div className={styles.successBanner} role="status">
-          <Check size={18} />
-          <span>Settings saved successfully</span>
-        </div>
-      )}
-
-      {error && (
-        <div className={styles.errorBanner} role="alert">
-          <AlertCircle size={18} />
-          <span>{error}</span>
-          <button onClick={() => setError(null)} aria-label="Dismiss error">
-            <X size={16} />
-          </button>
-        </div>
-      )}
-
-      <div className={styles.settingsLayout}>
-        <nav className={styles.settingsSidebar} aria-label="Settings categories">
-          <ul role="tablist">
-            {tabs.map(tab => (
-              <li key={tab.id} role="tab" aria-selected={activeTab === tab.id}>
-                <button
-                  className={`${styles.tabButton} ${activeTab === tab.id ? styles.active : ''}`}
-                  onClick={() => setActiveTab(tab.id as TabId)}
-                  role="tab"
-                  aria-selected={activeTab === tab.id}
-                >
-                  {tab.icon}
-                  <span>{tab.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className={styles.settingsContent} role="tabpanel" aria-labelledby={`${activeTab}-tab`}>
-          {activeTab === 'general' && <GeneralSettings settings={settings} onChange={updateSetting} profile={profile} setProfile={setProfile} />}
-          {activeTab === 'appearance' && <AppearanceSettings settings={settings} onChange={updateSetting} />}
-          {activeTab === 'notifications' && <NotificationSettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'privacy' && <PrivacySettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'ai' && <AISettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'integrations' && <IntegrationSettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'advanced' && <AdvancedSettings settings={settings} onChange={updateSetting} onReset={handleReset} onDelete={handleDeleteConfirm} showResetConfirm={showResetConfirm} setShowResetConfirm={setShowResetConfirm} showDeleteConfirm={showDeleteConfirm} setShowDeleteConfirm={setShowDeleteConfirm} />}
-        </div>
-      </div>
-
-      {saved && (
-        <div className={styles.successBanner} role="status">
-          <Check size={18} />
-          <span>Settings saved successfully</span>
-        </div>
-      )}
-
-      {error && (
-        <div className={styles.errorBanner} role="alert">
-          <AlertCircle size={18} />
-          <span>{error}</span>
-          <button onClick={() => setError(null)} aria-label="Dismiss error">
-            <X size={16} />
-          </button>
-        </div>
-      )}
-
-      <div className={styles.settingsLayout}>
-        <nav className={styles.settingsSidebar} aria-label="Settings categories">
-          <ul role="tablist">
-            {tabs.map(tab => (
-              <li key={tab.id} role="tab" aria-selected={activeTab === tab.id}>
-                <button
-                  className={`${styles.tabButton} ${activeTab === tab.id ? styles.active : ''}`}
-                  onClick={() => setActiveTab(tab.id as TabId)}
-                  role="tab"
-                  aria-selected={activeTab === tab.id}
-                >
-                  {tab.icon}
-                  <span>{tab.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className={styles.settingsContent} role="tabpanel" aria-labelledby={`${activeTab}-tab`}>
-          {activeTab === 'general' && <GeneralSettings settings={settings} onChange={updateSetting} profile={profile} setProfile={setProfile} />}
-          {activeTab === 'appearance' && <AppearanceSettings settings={settings} onChange={updateSetting} />}
-          {activeTab === 'notifications' && <NotificationSettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'privacy' && <PrivacySettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'ai' && <AISettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'integrations' && <IntegrationSettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'advanced' && <AdvancedSettings settings={settings} onChange={updateSetting} onReset={handleReset} onDelete={handleDeleteConfirm} showResetConfirm={showResetConfirm} setShowResetConfirm={setShowResetConfirm} showDeleteConfirm={showDeleteConfirm} setShowDeleteConfirm={setShowDeleteConfirm} />}
-        </div>
-      </div>
-
-      {saved && (
-        <div className={styles.successBanner} role="status">
-          <Check size={18} />
-          <span>Settings saved successfully</span>
-        </div>
-      )}
-
-      {error && (
-        <div className={styles.errorBanner} role="alert">
-          <AlertCircle size={18} />
-          <span>{error}</span>
-          <button onClick={() => setError(null)} aria-label="Dismiss error">
-            <X size={16} />
-          </button>
-        </div>
-      )}
-
-      <div className={styles.settingsLayout}>
-        <nav className={styles.settingsSidebar} aria-label="Settings categories">
-          <ul role="tablist">
-            {tabs.map(tab => (
-              <li key={tab.id} role="tab" aria-selected={activeTab === tab.id}>
-                <button
-                  className={`${styles.tabButton} ${activeTab === tab.id ? styles.active : ''}`}
-                  onClick={() => setActiveTab(tab.id as TabId)}
-                  role="tab"
-                  aria-selected={activeTab === tab.id}
-                >
-                  {tab.icon}
-                  <span>{tab.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className={styles.settingsContent} role="tabpanel" aria-labelledby={`${activeTab}-tab`}>
-          {activeTab === 'general' && <GeneralSettings settings={settings} onChange={updateSetting} profile={profile} setProfile={setProfile} />}
-          {activeTab === 'appearance' && <AppearanceSettings settings={settings} onChange={updateSetting} />}
-          {activeTab === 'notifications' && <NotificationSettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'privacy' && <PrivacySettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'ai' && <AISettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'integrations' && <IntegrationSettings settings={settings} onChange={updateNestedSetting} />}
-          {activeTab === 'advanced' && <AdvancedSettings settings={settings} onChange={updateSetting} onReset={handleReset} onDelete={handleDeleteConfirm} showResetConfirm={showResetConfirm} setShowResetConfirm={setShowResetConfirm} showDeleteConfirm={showDeleteConfirm} setShowDeleteConfirm={setShowDeleteConfirm} />}
+          {activeTab === 'about' && <AboutCreatorSection />}
         </div>
       </div>
 
@@ -830,6 +646,114 @@ function AdvancedSettings({ settings, onChange, onReset, onDelete, showResetConf
         </div>
       </section>
     </>
+  );
+}
+
+function AboutCreatorSection() {
+  return (
+    <section className={styles.section} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(16, 185, 129, 0.12) 50%, rgba(10, 16, 25, 0.95) 100%)',
+        border: '1px solid rgba(249, 115, 22, 0.35)',
+        borderRadius: '16px',
+        padding: '28px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 0 25px rgba(249, 115, 22, 0.15)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '24px',
+        flexWrap: 'wrap',
+      }}>
+        <div style={{ flex: 1, minWidth: '280px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'rgba(249, 115, 22, 0.2)', border: '1px solid rgba(249, 115, 22, 0.4)', borderRadius: '9999px', fontSize: '12px', color: '#fb923c', marginBottom: '12px' }}>
+            <Award size={14} />
+            <span>Atlassian Codegeist 2026 Submission</span>
+          </div>
+          <h2 style={{ fontSize: '26px', fontWeight: 700, margin: '0 0 8px 0', color: '#ffffff' }}>
+            ParallelOS
+          </h2>
+          <p style={{ fontSize: '15px', color: '#fb923c', fontStyle: 'italic', margin: '0 0 12px 0' }}>
+            One Organization. Infinite Possibilities.
+          </p>
+          <p style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: '1.6', margin: 0 }}>
+            An enterprise digital twin enabling leaders to branch organizations into parallel futures, test structural, budgetary, and technology changes deterministically, and explain cascading organizational consequences with grounded AI intelligence.
+          </p>
+        </div>
+        <div style={{ padding: '16px', background: 'rgba(10, 16, 25, 0.8)', border: '1px solid rgba(249, 115, 22, 0.3)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Logo size={80} showText={false} />
+        </div>
+      </div>
+
+      {/* Creator Attribution Card */}
+      <div style={{
+        background: 'rgba(14, 22, 32, 0.85)',
+        border: '1px solid rgba(16, 185, 129, 0.35)',
+        borderRadius: '16px',
+        padding: '24px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25), 0 0 15px rgba(16, 185, 129, 0.15)',
+      }}>
+        <h3 style={{ fontSize: '18px', fontWeight: 600, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '10px', color: '#34d399' }}>
+          <Sparkles size={20} />
+          Creator & Engineering Attribution
+        </h3>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px', padding: '16px', background: 'rgba(10, 16, 25, 0.7)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+          <div style={{
+            width: '54px',
+            height: '54px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #f97316 0%, #10b981 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '20px',
+            fontWeight: 700,
+            color: '#ffffff',
+            boxShadow: '0 0 15px rgba(249, 115, 22, 0.4)',
+          }}>
+            AP
+          </div>
+          <div>
+            <div style={{ fontSize: '18px', fontWeight: 700, color: '#f8fafc' }}>
+              Made by Adarsh Panicker
+            </div>
+            <div style={{ fontSize: '13px', color: '#fb923c', fontWeight: 500 }}>
+              Lead Architect & Full-Stack Engineer
+            </div>
+            <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+              Built for Atlassian Codegeist 2026 Hackathon
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+          <div style={{ padding: '14px', background: 'rgba(10, 16, 25, 0.6)', borderRadius: '10px', border: '1px solid rgba(249, 115, 22, 0.2)' }}>
+            <h4 style={{ margin: '0 0 6px 0', fontSize: '14px', color: '#fb923c' }}>Deterministic Simulation</h4>
+            <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8', lineHeight: 1.5 }}>
+              Pure TypeScript simulation engine with zero LLM-invented numbers. Cycle-safe dependency graph propagation with redundancy handling.
+            </p>
+          </div>
+          <div style={{ padding: '14px', background: 'rgba(10, 16, 25, 0.6)', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+            <h4 style={{ margin: '0 0 6px 0', fontSize: '14px', color: '#34d399' }}>Copy-on-Write Overlays</h4>
+            <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8', lineHeight: 1.5 }}>
+              Baseline organization state is strictly immutable. Scenarios overlay entity and relationship modifications with full audit provenance.
+            </p>
+          </div>
+          <div style={{ padding: '14px', background: 'rgba(10, 16, 25, 0.6)', borderRadius: '10px', border: '1px solid rgba(249, 115, 22, 0.2)' }}>
+            <h4 style={{ margin: '0 0 6px 0', fontSize: '14px', color: '#fb923c' }}>Grounded NVIDIA NIM AI</h4>
+            <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8', lineHeight: 1.5 }}>
+              AI acts solely as a natural-language parser and result interpreter. Structured outputs validated by Zod schemas with complete evidence citation.
+            </p>
+          </div>
+          <div style={{ padding: '14px', background: 'rgba(10, 16, 25, 0.6)', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+            <h4 style={{ margin: '0 0 6px 0', fontSize: '14px', color: '#34d399' }}>Atlassian Ecosystem</h4>
+            <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8', lineHeight: 1.5 }}>
+              Jira project/issue syncing, remediation action creation, Confluence report publishing, and Rovo Agent "ParallelOS Intelligence".
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 

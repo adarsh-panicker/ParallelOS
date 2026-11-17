@@ -349,7 +349,7 @@ export const businessSystems: Entity[] = [
     redundancyLevel: 'active-passive',
     estimatedReplacementCost: 5_000_000,
     annualLicenseCost: 800_000,
-    dependentSystems: ['sys-crm', 'sys-reporting'],
+    dependentSystems: ['sys-crm', 'sys-bi'],
     hostedAssets: ['asset-db-primary', 'asset-db-standby', 'asset-app-cluster'],
   }),
   createBusinessSystem('CRM System', DEMO_CREATOR, {
@@ -382,7 +382,7 @@ export const businessSystems: Entity[] = [
     redundancyLevel: 'active-passive',
     estimatedReplacementCost: 10_000_000,
     annualLicenseCost: 1_500_000,
-    dependentSystems: ['sys-reporting', 'sys-bi'],
+    dependentSystems: ['sys-bi'],
     hostedAssets: ['asset-erp-primary', 'asset-erp-standby'],
   }),
   createBusinessSystem('HRIS', DEMO_CREATOR, {
@@ -438,7 +438,7 @@ export const businessSystems: Entity[] = [
     estimatedReplacementCost: 300_000,
     annualLicenseCost: 60_000,
     dependentSystems: ['sys-cicd'],
-    hostedAssets: ['asset-artifact-primary', 'asset-artifact-standby'],
+    hostedAssets: ['asset-aws'],
   }),
   createBusinessSystem('Business Intelligence', DEMO_CREATOR, {
     vendorId: 'vendor-tableau',
@@ -942,8 +942,8 @@ export const relationships: Relationship[] = [
   dependsOn('sys-itsm', 'sys-cicd', DEMO_CREATOR, false),
   dependsOn('sys-artifact-registry', 'sys-cicd', DEMO_CREATOR, true),
   dependsOn('sys-bi', 'sys-erp', DEMO_CREATOR, true),
-  dependsOn('sys-reporting', 'sys-core-banking', DEMO_CREATOR, true),
-  dependsOn('sys-reporting', 'sys-erp', DEMO_CREATOR, false),
+  dependsOn('sys-bi', 'sys-core-banking', DEMO_CREATOR, true),
+  dependsOn('sys-bi', 'sys-erp', DEMO_CREATOR, false),
   
   // System -> Asset (runsOn)
   runsOn('sys-core-banking', 'asset-db-primary', DEMO_CREATOR, createActivePassiveRedundancy(['asset-db-standby'])),
@@ -954,7 +954,7 @@ export const relationships: Relationship[] = [
   runsOn('sys-cicd', 'asset-aws', DEMO_CREATOR, createGeoRedundancy()),
   runsOn('sys-monitoring', 'asset-aws', DEMO_CREATOR, createActiveActiveRedundancy()),
   runsOn('sys-monitoring', 'asset-gcp', DEMO_CREATOR, createActivePassiveRedundancy()),
-  runsOn('sys-artifact-registry', 'asset-artifact-primary', DEMO_CREATOR, createActivePassiveRedundancy(['asset-artifact-standby'])),
+  runsOn('sys-artifact-registry', 'asset-aws', DEMO_CREATOR, createGeoRedundancy()),
   runsOn('sys-mainframe', 'asset-mainframe', DEMO_CREATOR, createNoRedundancy()),
   
   // Asset -> System (hosts)
@@ -982,8 +982,6 @@ export const relationships: Relationship[] = [
   hosts('asset-aws', 'sys-monitoring', DEMO_CREATOR),
   hosts('asset-aws', 'sys-artifact-registry', DEMO_CREATOR),
   hosts('asset-gcp', 'sys-monitoring', DEMO_CREATOR),
-  hosts('asset-artifact-primary', 'sys-artifact-registry', DEMO_CREATOR),
-  hosts('asset-artifact-standby', 'sys-artifact-registry', DEMO_CREATOR),
   hosts('asset-m365', 'sys-collab', DEMO_CREATOR),
   hosts('asset-sfdc', 'sys-crm', DEMO_CREATOR),
   hosts('asset-mainframe', 'sys-mainframe', DEMO_CREATOR),

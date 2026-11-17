@@ -10,9 +10,8 @@ import {
   CreateJiraTasksOutput,
   RovoError,
   TaskProposal,
-  SimulationDecision,
 } from './atlassian-types';
-import { SimulationResult } from '../simulation/types';
+import { SimulationResult, SimulationDecision } from '../simulation/types';
 import { ComparisonResult } from '../comparison/types';
 import { AIService } from '../ai/service';
 import { JiraService } from './jira';

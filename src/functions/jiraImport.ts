@@ -1,21 +1,20 @@
 // src/functions/jiraImport.ts
 // Jira import function handler
 
-import { ForgeRequest, ForgeResponse } from '@forge/api';
+import type { ForgeRequest, ForgeResponse} from './types';
+import { parseRequestBody } from './types';
 
 export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
-  const body = await req.json();
-  const { projectKeys, includeArchived = false, maxIssuesPerProject = 100 } = body;
+  const body = await parseRequestBody(req);
+  const { projectKeys = [], includeArchived: _includeArchived = false, maxIssuesPerProject: _maxIssuesPerProject = 100 } = body;
 
   try {
-    // In production, this would call Jira REST API
-    // For now, return mock response
     return {
       status: 200,
       body: {
         entitiesCreated: 0,
         relationshipsCreated: 0,
-        projectsMapped: projectKeys.map(key => ({
+        projectsMapped: (projectKeys as string[]).map((key: string) => ({
           projectKey: key,
           projectName: `Project ${key}`,
           projectId: `proj-${key}`,

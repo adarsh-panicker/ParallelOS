@@ -1,7 +1,7 @@
 // src/functions/index.ts
 // Export all function handlers
 
-export { handler as resolverHandler } from './index';
+export * from './types';
 export { handler as jiraImportHandler } from './jiraImport';
 export { handler as jiraTasksHandler } from './jiraTasks';
 export { handler as confluenceLinkHandler } from './confluenceLink';
@@ -14,4 +14,3 @@ export { handler as webhookHandler } from './webhookHandler';
 export { handler as jiraWebhookHandler } from './jiraWebhook';
 export { handler as scheduledSyncHandler } from './scheduledSync';
 export { handler as weeklyCleanupHandler } from './weeklyCleanup';
-export { handler as jiraWebhookHandler } from './jiraWebhook';

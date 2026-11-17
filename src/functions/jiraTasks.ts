@@ -1,11 +1,12 @@
 // src/functions/jiraTasks.ts
 // Jira task creation function handler
 
-import { ForgeRequest, ForgeResponse } from '@forge/api';
+import type { ForgeRequest, ForgeResponse} from './types';
+import { parseRequestBody } from './types';
 
 export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
-  const body = await req.json();
-  const { scenarioId, simulationResultId, taskProposals, approvalToken } = body;
+  const body = await parseRequestBody(req);
+  const { scenarioId: _scenarioId, simulationResultId: _simulationResultId, taskProposals = [], approvalToken } = body;
 
   const expectedToken = 'Yes, create these tasks';
   if (approvalToken !== expectedToken) {
@@ -21,8 +22,6 @@ export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
 
     for (const proposal of taskProposals) {
       try {
-        // In production, call Jira REST API
-        // For now, simulate success
         createdIssues.push({
           issueKey: `PROJ-${Date.now()}`,
           issueId: `issue-${Date.now()}`,

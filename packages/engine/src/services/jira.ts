@@ -65,10 +65,10 @@ export class JiraService {
     if (!response.ok) {
       let errorMessage = `Jira API error: ${response.status}`;
       try {
-        const errorBody = await response.json();
+        const errorBody = (await response.json()) as any;
         errorMessage = errorBody.errorMessages?.join(', ') || errorMessage;
       } catch {
-        errorMessage = await response.text() || errorMessage;
+        errorMessage = (await response.text()) || errorMessage;
       }
       
       const code = this.mapStatusCode(response.status);
@@ -79,7 +79,7 @@ export class JiraService {
       return {} as T;
     }
 
-    return response.json();
+    return (await response.json()) as T;
   }
 
   private mapStatusCode(status: number): AtlassianError['code'] {

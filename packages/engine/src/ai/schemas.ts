@@ -14,11 +14,11 @@ export const ScenarioProposalSchema = z.object({
     type: z.nativeEnum(DecisionType),
     description: z.string().min(1).max(500),
     parameters: z.record(z.unknown()),
-    targetEntityIds: z.array(z.string().uuid()).min(1),
+    targetEntityIds: z.array(z.string().min(1)).min(1),
   })).min(1).max(20),
   assumptions: z.array(z.object({
     key: z.string().min(1).max(100),
-    value: z.unknown(),
+    value: z.unknown().optional(),
     description: z.string().min(1).max(500),
     confidence: z.number().min(0).max(1),
   })).max(50),

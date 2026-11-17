@@ -7,7 +7,7 @@ import {
   ScenarioProposal, 
   Explanation, 
   Recommendation,
-  BaseEntity,
+  AIBaseEntity,
   BaseRelationship,
   BaseScenario,
   InterpretationError,
@@ -110,7 +110,7 @@ export class AIService {
   /**
    * Map raw entities to base entities
    */
-  private mapEntities(entities: Map<string, any>): BaseEntity[] {
+  private mapEntities(entities: Map<string, any>): AIBaseEntity[] {
     return Array.from(entities.values()).map(e => ({
       id: e.id,
       type: e.type,

@@ -14,7 +14,7 @@ export interface AIProvider {
   // Core capabilities
   interpretNaturalLanguage(prompt: string, context: OrgContext): Promise<ScenarioProposal>;
   explainSimulation(question: string, results: SimulationResult[]): Promise<Explanation>;
-  recommendDecisions(goals: string[], context: OrgContext): Promise<Recommendation[]>;
+  recommendDecisions(goals: string[], context: OrgContext): Promise<Recommendation>;
 
   // Health check
   healthCheck(): Promise<{ healthy: boolean; latencyMs: number }>;
@@ -24,7 +24,7 @@ export interface AIProvider {
  * Organizational context provided to AI
  */
 export interface OrgContext {
-  entities: BaseEntity[];
+  entities: AIBaseEntity[];
   relationships: BaseRelationship[];
   scenarios: BaseScenario[];
   recentSimulations: SimulationResult[];
@@ -33,7 +33,7 @@ export interface OrgContext {
 /**
  * Minimal entity for AI context
  */
-export interface BaseEntity {
+export interface AIBaseEntity {
   id: EntityId;
   type: string;
   name: string;
@@ -143,7 +143,7 @@ export interface ProposedDecision {
 
 export interface ProposedAssumption {
   key: string;
-  value: unknown;
+  value?: unknown;
   description: string;
   confidence: number;
 }
@@ -174,7 +174,10 @@ export interface Recommendation {
 export interface RecommendationItem {
   title: string;
   description: string;
-  decisions: ProposedDecision[];
+  decisions: {
+    type: DecisionType;
+    parameters: Record<string, unknown>;
+  }[];
   expectedImpact: string;
   risks: string[];
   confidence: number;

@@ -1,22 +1,15 @@
 // src/functions/aiService.ts
 // AI service function handler
 
-import { ForgeRequest, ForgeResponse } from '@forge/api';
-import { AIService, getAIService, initializeAIService, createMockAIProvider } from '../../engine/src/ai';
+import type { ForgeRequest, ForgeResponse} from './types';
+import { parseRequestBody } from './types';
+import { getAIService, createMockAIProvider } from '@parallelos/engine';
 
 let aiService: ReturnType<typeof getAIService> | null = null;
 
 function getOrCreateAIService() {
   if (!aiService) {
     aiService = getAIService();
-    // In production, initialize with NVIDIA NIM config from env vars
-    // aiService.initialize({
-    //   name: 'NVIDIA NIM',
-    //   modelId: process.env.NVIDIA_NIM_MODEL_ID || 'meta/llama-3.1-70b-instruct',
-    //   endpoint: process.env.NVIDIA_NIM_ENDPOINT || 'https://integrate.api.nvidia.com/v1',
-    //   apiKey: process.env.NVIDIA_NIM_API_KEY || '',
-    // });
-    // For development, use mock provider
     const mockProvider = createMockAIProvider();
     (aiService as any).provider = mockProvider;
     (aiService as any).config = { name: 'mock', modelId: 'mock', endpoint: 'mock', apiKey: 'mock' };
@@ -25,7 +18,7 @@ function getOrCreateAIService() {
 }
 
 export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
-  const body = await req.json();
+  const body = await parseRequestBody(req);
   const { action, ...data } = body;
 
   try {

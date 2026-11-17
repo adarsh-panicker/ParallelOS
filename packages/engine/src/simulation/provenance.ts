@@ -1,6 +1,7 @@
 // packages/engine/src/simulation/provenance.ts
 
-import { ProvenanceRecord, AssumptionRef, EntityId, ValueSource } from '../../entities/types';
+import { EntityId, ValueSource } from '../entities/types';
+import { ProvenanceRecord, AssumptionRef } from './types';
 
 /**
  * Create a provenance record for a calculation
@@ -33,14 +34,15 @@ export function createProvenanceRecord(
  * Merge multiple provenance records
  */
 export function mergeProvenance(records: ProvenanceRecord[]): ProvenanceRecord {
-  if (records.length === 0) {
+  const first = records[0];
+  if (!first || records.length === 0) {
     throw new Error('Cannot merge empty provenance records');
   }
-  if (records.length === 1) return records[0];
+  if (records.length === 1) return first;
 
   return {
-    triggeringDecision: records[0].triggeringDecision,
-    affectedEntity: records[0].affectedEntity,
+    triggeringDecision: first.triggeringDecision,
+    affectedEntity: first.affectedEntity,
     dependencyPath: records.flatMap(r => r.dependencyPath),
     formula: records.map(r => r.formula).join('; '),
     assumptions: records.flatMap(r => r.assumptions),

@@ -1,8 +1,8 @@
 ﻿// packages/engine/src/simulation/calculators.ts
 
-import { EntityId, Criticality, DecisionType, ValueSource, EntityType } from '../../entities/types';
+import { EntityId, Criticality, DecisionType, ValueSource, EntityType } from '../entities/types';
 import {
-  SimulationExecutionContext,
+  SimulationContext,
   AffectedEntity,
   BudgetDelta,
   BudgetDeltaItem,
@@ -11,17 +11,17 @@ import {
   ResourceGap,
   ProcessDisruption,
   ProvenanceRecord,
-} from '../engine/types';
+  MitigationEffect,
+} from './types';
 import { createProvenanceRecord } from './provenance';
-import { MitigationEffect } from '../engine/types';
 
 /**
  * Budget Calculator
  */
 export function calculateBudgetImpacts(context: any): BudgetDelta[] {
   const deltas: BudgetDelta[] = [];
-  const budgetEntities = Array.from(context.entities.values())
-    .filter(e => e.type === 'budget');
+  const budgetEntities = (Array.from(context.entities.values()) as any[])
+    .filter((e: any) => e.type === 'budget');
 
   for (const budget of budgetEntities) {
     const baselineAmount = safeGetNumber(budget.properties.totalAmount);
@@ -48,8 +48,8 @@ export function calculateBudgetImpacts(context: any): BudgetDelta[] {
     }
 
     // Propagate from affected projects/departments
-    const fundedEntities = Array.from(context.affectedEntities.values())
-      .filter(e => e.impactType === 'direct' || e.impactSeverity !== 'low');
+    const fundedEntities = (Array.from(context.affectedEntities.values()) as any[])
+      .filter((e: any) => e.impactType === 'direct' || e.impactSeverity !== 'low');
 
     for (const impact of fundedEntities) {
       const entity = impact.entityId;
@@ -89,8 +89,8 @@ export function calculateBudgetImpacts(context: any): BudgetDelta[] {
  */
 export function calculateResourceImpacts(context: any): any[] {
   const shortages: any[] = [];
-  const resourceEntities = Array.from(context.entities.values())
-    .filter(e => e.type === 'resource');
+  const resourceEntities = (Array.from(context.entities.values()) as any[])
+    .filter((e: any) => e.type === 'resource');
 
   for (const resource of resourceEntities) {
     const totalCapacity = safeGetNumber(resource.properties.totalCapacity);
@@ -147,8 +147,8 @@ export function calculateResourceImpacts(context: any): any[] {
  */
 export function calculateProjectImpacts(context: any): any[] {
   const impacts: any[] = [];
-  const projectEntities = Array.from(context.entities.values())
-    .filter(e => e.type === 'project');
+  const projectEntities = (Array.from(context.entities.values()) as any[])
+    .filter((e: any) => e.type === 'project');
 
   for (const project of projectEntities) {
     const directImpact = context.affectedEntities.get(project.id);
@@ -167,11 +167,12 @@ export function calculateProjectImpacts(context: any): any[] {
     // Would trace through dependency graph in full implementation
 
     // Resource gaps
-    const projectResources = project.properties.requiredResources || {};
-    for (const [resourceId, required] of Object.entries(projectResources)) {
+    const projectResources = (project.properties.requiredResources || {}) as Record<string, any>;
+    for (const [resourceId, reqVal] of Object.entries(projectResources)) {
       const resource = context.entities.get(resourceId);
       if (!resource) continue;
 
+      const required = safeGetNumber(reqVal);
       const available = safeGetNumber(resource.properties.availableCapacity);
       if (required > available) {
         resourceGaps.push({
@@ -220,8 +221,8 @@ export function calculateProjectImpacts(context: any): any[] {
  */
 export function calculateProcessImpacts(context: any): any[] {
   const disruptions: any[] = [];
-  const processEntities = Array.from(context.entities.values())
-    .filter(e => e.type === 'process');
+  const processEntities = (Array.from(context.entities.values()) as any[])
+    .filter((e: any) => e.type === 'process' || e.type === 'business_process');
 
   for (const process of processEntities) {
     const directImpact = context.affectedEntities.get(process.id);
@@ -261,17 +262,18 @@ export function calculateProcessImpacts(context: any): any[] {
     }
 
     // Estimate recovery time
-    let estimatedRecoveryTimeMs = 'unknown';
+    let estimatedRecoveryTimeMs: number | string = 'unknown';
     if (disruptionLevel !== 'none') {
-      const baseRecovery = {
+      const recoveryMap: Record<string, number> = {
         minor: 3600000,      // 1 hour
         major: 14400000,     // 4 hours
         critical: 86400000,  // 24 hours
         halted: 604800000,   // 1 week
         none: 0,
-      }[disruptionLevel];
+      };
+      const baseRecovery = recoveryMap[disruptionLevel] ?? 0;
 
-      const hasRedundancy = criticalSystems.some(sid => {
+      const hasRedundancy = criticalSystems.some((sid: string) => {
         const sys = context.entities.get(sid);
         return sys && sys.properties.redundancyLevel !== 'none';
       });
@@ -337,17 +339,18 @@ function mapSeverityToDelayRisk(severity: string): any {
 }
 
 function severityOrder(risk: string): number {
-  const order = { none: 0, low: 1, medium: 2, high: 3, critical: 4 };
-  return order[risk] || 0;
+  const order: Record<string, number> = { none: 0, low: 1, medium: 2, high: 3, critical: 4 };
+  return order[risk] ?? 0;
 }
 
 function estimateDelayDays(severity: string, project: any): number | 'unknown' {
-  const baseDays = {
+  const baseDaysMap: Record<string, number> = {
     low: 1,
     medium: 5,
     high: 15,
     critical: 30,
-  }[severity];
+  };
+  const baseDays = baseDaysMap[severity] ?? 0;
 
   const projectDuration = safeGetNumber(project.properties.endDate) - safeGetNumber(project.properties.startDate);
   const durationWeeks = projectDuration / (7 * 24 * 60 * 60 * 1000);

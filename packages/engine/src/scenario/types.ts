@@ -23,7 +23,8 @@ export interface EntityOverride {
   entityId: EntityId;
   operation: 'create' | 'update' | 'delete';
   previousVersion?: VersionId;
-  newData: Partial<{
+  newData?: Partial<{
+    type: string;
     name: string;
     description: string;
     properties: Record<string, unknown>;
@@ -44,12 +45,15 @@ export interface RelationshipOverride {
   operation: 'create' | 'update' | 'delete';
   previousVersion?: VersionId;
   newData?: Partial<{
+    sourceId: EntityId;
+    targetId: EntityId;
     type: string;
     direction: string;
     criticality: Criticality;
     dependencyStrength: string;
     redundancyInfo: any;
     confidence: number;
+    evidence: any[];
     properties: Record<string, unknown>;
   }>;
   appliedAt: number;

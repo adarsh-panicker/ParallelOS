@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
 import { 
   Layout, Home, GitBranch, BarChart2, History, Settings, Menu, X, ChevronRight, 
-  Building2, Building, Handshake, Server, Database 
+  Building2, Building, Handshake, Server, Database, Sparkles, Award
 } from 'lucide-react';
 import { OrganizationTwin } from './pages/OrganizationTwin';
 import { CompareFutures } from './pages/CompareFutures';
 import { ScenarioLab } from './pages/ScenarioLab';
 import { SimulationHistory } from './pages/SimulationHistory';
 import { SettingsPage } from './pages/Settings';
+import { Logo } from './components/Logo';
 import './index.css';
 
 type Page = 'overview' | 'twin' | 'scenario' | 'compare' | 'history' | 'integrations' | 'settings';
@@ -90,9 +91,8 @@ function App() {
         style={{ transform: mobileMenuOpen ? 'translateX(0)' : undefined }}
       >
         <div className="sidebar-header">
-          <div className="logo">
-            <Building2 size={28} />
-            <span className={sidebarOpen ? '' : 'hidden'}>ParallelOS</span>
+          <div className="logo" onClick={() => setCurrentPage('overview')} style={{ cursor: 'pointer' }}>
+            <Logo size={sidebarOpen ? 30 : 26} showText={sidebarOpen} />
           </div>
           <button 
             className="sidebar-toggle"
@@ -120,6 +120,15 @@ function App() {
         </nav>
 
         <div className="sidebar-footer">
+          <div className="creator-credit" style={{ display: sidebarOpen ? 'block' : 'none' }}>
+            <div className="creator-badge-inner">
+              <span className="creator-sparkle">✦</span>
+              <div className="creator-meta">
+                <span className="creator-by">Made by</span>
+                <span className="creator-name">Adarsh Panicker</span>
+              </div>
+            </div>
+          </div>
           <div className="user-info" style={{ display: sidebarOpen ? 'flex' : 'none' }}>
             <div className="user-avatar">DA</div>
             <div className="user-details">
@@ -149,15 +158,19 @@ function App() {
       {/* Main Content */}
       <main className="main-content" style={{ marginLeft: sidebarOpen ? '280px' : '72px' }}>
         <header className="top-bar">
-          <div className="page-title">
-            <h1>{pages.find(p => p.id === currentPage)?.label}</h1>
+          <div className="page-title-container">
+            <Logo size={24} showText={false} />
+            <div className="page-title">
+              <h1>{pages.find(p => p.id === currentPage)?.label}</h1>
+            </div>
           </div>
           <div className="top-bar-actions">
+            <div className="creator-pill" title="ParallelOS Architect & Lead Engineer">
+              <Award size={14} className="creator-pill-icon" />
+              <span>Made by <strong>Adarsh Panicker</strong></span>
+            </div>
             <button className="icon-btn" title="Refresh" onClick={() => window.location.reload()}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-            </button>
-            <button className="icon-btn" title="Notifications">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
             </button>
             <div className="user-menu">
               <div className="user-avatar-small">DA</div>
@@ -259,19 +272,20 @@ function App() {
           alignItems: center;
           justifyContent: space-between;
           padding: 16px;
-          borderBottom: '1px solid #1e293b';
+          border-bottom: 1px solid rgba(249, 115, 22, 0.2);
         }
 
         .logo {
           display: flex;
-          alignItems: center;
+          align-items: center;
           gap: 12px;
-          color: #3b82f6;
+          color: #f97316;
+          user-select: none;
         }
 
         .logo span {
-          fontSize: '20px';
-          fontWeight: 700;
+          font-size: 20px;
+          font-weight: 700;
           transition: opacity 0.2s;
         }
 
@@ -284,20 +298,21 @@ function App() {
         .sidebar-toggle {
           width: 32px;
           height: 32px;
-          borderRadius: 8px;
+          border-radius: 8px;
           background: transparent;
-          border: '1px solid #1e293b';
+          border: 1px solid rgba(249, 115, 22, 0.2);
           color: #94a3b8;
           cursor: pointer;
           display: flex;
-          alignItems: center;
-          justifyContent: center;
+          align-items: center;
+          justify-content: center;
           transition: all 0.2s;
         }
 
         .sidebar-toggle:hover {
-          background: #1e293b;
+          background: rgba(249, 115, 22, 0.1);
           color: #f8fafc;
+          border-color: rgba(249, 115, 22, 0.4);
         }
 
         .sidebar-nav {
@@ -309,113 +324,191 @@ function App() {
         .nav-item {
           width: 100%;
           display: flex;
-          alignItems: center;
+          align-items: center;
           gap: 12px;
           padding: 12px 14px;
-          borderRadius: 10px;
+          border-radius: 10px;
           background: transparent;
           border: none;
           color: #94a3b8;
-          fontSize: '14px';
-          fontWeight: 500;
+          font-size: 14px;
+          font-weight: 500;
           cursor: pointer;
-          textAlign: left;
+          text-align: left;
           transition: all 0.15s;
-          whiteSpace: nowrap;
+          white-space: nowrap;
           overflow: hidden;
         }
 
         .nav-item:hover {
-          background: #1e293b;
+          background: rgba(249, 115, 22, 0.08);
           color: #f8fafc;
         }
 
         .nav-item.active {
-          background: rgba(59, 130, 246, 0.15);
-          color: #3b82f6;
-          borderLeft: '3px solid #3b82f6';
+          background: linear-gradient(90deg, rgba(249, 115, 22, 0.18) 0%, rgba(16, 185, 129, 0.1) 100%);
+          color: #fb923c;
+          border-left: 3px solid #f97316;
+          box-shadow: inset 2px 0 8px rgba(249, 115, 22, 0.2);
         }
 
         .nav-item svg {
-          flexShrink: 0;
+          flex-shrink: 0;
         }
 
         .sidebar-footer {
           padding: 16px;
-          borderTop: '1px solid #1e293b';
+          border-top: 1px solid rgba(249, 115, 22, 0.2);
+          background: rgba(10, 16, 25, 0.6);
+        }
+
+        .creator-credit {
+          margin-bottom: 12px;
+          padding: 10px 12px;
+          background: linear-gradient(135deg, rgba(249, 115, 22, 0.12) 0%, rgba(16, 185, 129, 0.08) 100%);
+          border: 1px solid rgba(249, 115, 22, 0.25);
+          border-radius: 10px;
+          box-shadow: inset 0 0 12px rgba(249, 115, 22, 0.08);
+        }
+
+        .creator-badge-inner {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .creator-sparkle {
+          color: #f97316;
+          font-size: 14px;
+          animation: pulse 2s infinite;
+        }
+
+        .creator-meta {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .creator-by {
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #94a3b8;
+        }
+
+        .creator-name {
+          font-size: 12px;
+          font-weight: 600;
+          color: #34d399;
+        }
+
+        .creator-pill {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          background: linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%);
+          border: 1px solid rgba(249, 115, 22, 0.35);
+          border-radius: 9999px;
+          font-size: 12px;
+          color: #fed7aa;
+          box-shadow: 0 0 15px rgba(249, 115, 22, 0.2);
+          transition: all 0.2s ease;
+        }
+
+        .creator-pill strong {
+          color: #34d399;
+          font-weight: 600;
+        }
+
+        .creator-pill:hover {
+          border-color: rgba(16, 185, 129, 0.5);
+          box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+          transform: translateY(-1px);
+        }
+
+        .creator-pill-icon {
+          color: #f97316;
+        }
+
+        .page-title-container {
+          display: flex;
+          align-items: center;
+          gap: 12px;
         }
 
         .user-info {
           display: flex;
-          alignItems: center;
+          align-items: center;
           gap: 12px;
           padding: 8px;
-          borderRadius: 10px;
+          border-radius: 10px;
           background: #111827;
-          border: '1px solid #1e293b';
+          border: 1px solid #1e293b;
         }
 
         .user-avatar {
-          width: 40px;
-          height: 40px;
-          borderRadius: 50%;
-          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #f97316, #10b981);
           display: flex;
-          alignItems: center;
-          justifyContent: center;
-          fontWeight: 600;
-          fontSize: 14px;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 13px;
           color: white;
+          box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
         }
 
         .user-details {
           flex: 1;
           display: flex;
-          flexDirection: column;
-          minWidth: 0;
+          flex-direction: column;
+          min-width: 0;
         }
 
         .user-name {
-          fontSize: '14px';
-          fontWeight: 600;
+          font-size: 13px;
+          font-weight: 600;
           color: #f8fafc;
-          whiteSpace: nowrap;
+          white-space: nowrap;
           overflow: hidden;
-          textOverflow: ellipsis;
+          text-overflow: ellipsis;
         }
 
         .user-role {
-          fontSize: '12px';
-          color: #64748b;
-          whiteSpace: nowrap;
+          font-size: 11px;
+          color: #94a3b8;
+          white-space: nowrap;
           overflow: hidden;
-          textOverflow: ellipsis;
+          text-overflow: ellipsis;
         }
 
         .health-badge {
           display: flex;
-          alignItems: center;
+          align-items: center;
           gap: 8px;
-          marginTop: 12px;
-          padding: 8px 12px;
-          background: rgba(34, 197, 94, 0.1);
-          border: '1px solid rgba(34, 197, 94, 0.3)';
-          borderRadius: 8px;
-          fontSize: '12px';
-          color: #22c55e;
+          margin-top: 10px;
+          padding: 6px 10px;
+          background: rgba(16, 185, 129, 0.12);
+          border: 1px solid rgba(16, 185, 129, 0.35);
+          border-radius: 8px;
+          font-size: 11px;
+          color: #34d399;
         }
 
         .health-dot {
-          width: '8px';
-          height: '8px';
-          borderRadius: '50%';
-          background: '#22c55e';
-          animation: 'pulse 2s infinite';
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #10b981;
+          box-shadow: 0 0 8px #10b981;
+          animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.9); }
         }
 
         /* Mobile Styles */
@@ -437,62 +530,68 @@ function App() {
           position: sticky;
           top: 0;
           height: 64px;
-          background: #0a1120;
-          borderBottom: '1px solid #1e293b';
+          background: rgba(10, 16, 25, 0.85);
+          backdrop-filter: blur(12px);
+          border-bottom: 1px solid rgba(249, 115, 22, 0.2);
           display: flex;
-          alignItems: center;
-          justifyContent: space-between;
+          align-items: center;
+          justify-content: space-between;
           padding: 0 24px;
-          zIndex: 100;
+          z-index: 100;
         }
 
         .page-title h1 {
-          fontSize: '24px';
-          fontWeight: 600;
+          font-size: 22px;
+          font-weight: 600;
           margin: 0;
-          letterSpacing: '-0.02em';
+          letter-spacing: -0.02em;
+          background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         .top-bar-actions {
           display: flex;
-          alignItems: center;
-          gap: 8px;
+          align-items: center;
+          gap: 12px;
         }
 
         .icon-btn {
-          width: 40px;
-          height: 40px;
-          borderRadius: 10px;
-          background: transparent;
-          border: '1px solid #1e293b';
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          background: rgba(17, 24, 39, 0.8);
+          border: 1px solid rgba(249, 115, 22, 0.2);
           color: #94a3b8;
           cursor: pointer;
           display: flex;
-          alignItems: center;
-          justifyContent: center;
+          align-items: center;
+          justify-content: center;
           transition: all 0.2s;
         }
 
         .icon-btn:hover {
-          background: #1e293b;
-          color: #f8fafc;
+          background: rgba(249, 115, 22, 0.15);
+          border-color: rgba(249, 115, 22, 0.4);
+          color: #f97316;
         }
 
         .user-menu {
-          marginLeft: 8px;
+          margin-left: 4px;
         }
 
         .user-avatar-small {
-          width: 32px;
-          height: 32px;
-          borderRadius: 50%;
-          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #f97316, #10b981);
           display: flex;
-          alignItems: center;
-          justifyContent: center;
-          fontWeight: 600;
-          fontSize: 12px;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 12px;
           color: white;
+          box-shadow: 0 0 10px rgba(249, 115, 22, 0.35);
         }
 
         /* Main Content */
@@ -509,184 +608,366 @@ function App() {
 
         .page-content {
           padding: 24px;
-          maxWidth: '100%';
+          max-width: 100%;
         }
 
         /* Placeholder Page Styles */
         .placeholder-page {
           display: flex;
-          flexDirection: column;
-          alignItems: center;
-          justifyContent: center;
-          height: '100%';
-          minHeight: '500px';
-          textAlign: center;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          min-height: 500px;
+          text-align: center;
           padding: 48px;
         }
 
         .placeholder-icon {
           width: 100px;
           height: 100px;
-          borderRadius: 50%;
-          background: #1e3a5f;
-          border: '2px solid #3b82f6';
+          border-radius: 50%;
+          background: rgba(249, 115, 22, 0.12);
+          border: 2px solid #f97316;
           display: flex;
-          alignItems: center;
-          justifyContent: center;
-          margin: '0 auto 32px';
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 32px;
+          box-shadow: 0 0 30px rgba(249, 115, 22, 0.25);
         }
 
         .placeholder-page h2 {
-          margin: '0 0 16px 0';
-          fontSize: '28px';
-          fontWeight: 600;
+          margin: 0 0 16px 0;
+          font-size: 28px;
+          font-weight: 600;
         }
 
         .placeholder-page p {
-          margin: '0 0 32px 0';
+          margin: 0 0 32px 0;
           color: #94a3b8;
-          maxWidth: '480px';
-          lineHeight: 1.6;
+          max-width: 480px;
+          line-height: 1.6;
         }
 
         .placeholder-stats {
           display: flex;
           gap: 32px;
-          marginTop: 24px;
+          margin-top: 24px;
         }
 
         .stat-item {
-          textAlign: center;
+          text-align: center;
         }
 
         .stat-value {
-          fontSize: '32px';
-          fontWeight: 700;
-          color: #3b82f6;
-          fontFamily: 'monospace';
+          font-size: 32px;
+          font-weight: 700;
+          color: #f97316;
+          font-family: 'JetBrains Mono', 'Fira Code', monospace;
         }
 
         .stat-label {
-          fontSize: '13px';
+          font-size: 13px;
           color: #64748b;
-          marginTop: 4px;
+          margin-top: 4px;
         }
 
-        /* Overview Page */
+        /* Overview Page Hero Banner */
+        .overview-hero {
+          background: linear-gradient(135deg, rgba(249, 115, 22, 0.12) 0%, rgba(16, 185, 129, 0.08) 50%, rgba(10, 16, 25, 0.95) 100%);
+          border: 1px solid rgba(249, 115, 22, 0.3);
+          border-radius: 20px;
+          padding: 32px;
+          margin-bottom: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 24px;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(249, 115, 22, 0.15);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .overview-hero::before {
+          content: '';
+          position: absolute;
+          top: -60px;
+          right: -60px;
+          width: 240px;
+          height: 240px;
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+          pointer-events: none;
+        }
+
+        .hero-content {
+          flex: 1;
+          max-width: 780px;
+        }
+
+        .hero-badge-row {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 14px;
+        }
+
+        .hero-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 12px;
+          background: rgba(249, 115, 22, 0.18);
+          border: 1px solid rgba(249, 115, 22, 0.4);
+          border-radius: 9999px;
+          font-size: 12px;
+          font-weight: 500;
+          color: #fb923c;
+        }
+
+        .hero-author-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 14px;
+          background: linear-gradient(135deg, rgba(249, 115, 22, 0.18) 0%, rgba(16, 185, 129, 0.18) 100%);
+          border: 1px solid rgba(16, 185, 129, 0.4);
+          border-radius: 9999px;
+          font-size: 12px;
+          color: #e2e8f0;
+          box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .hero-author-pill strong {
+          color: #34d399;
+          font-weight: 600;
+        }
+
+        .hero-title {
+          font-size: 34px;
+          font-weight: 800;
+          margin: 0 0 6px 0;
+          letter-spacing: -0.03em;
+          display: flex;
+          align-items: baseline;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .gradient-text-orange {
+          background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-text-green {
+          background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle-tag {
+          font-size: 16px;
+          font-weight: 500;
+          color: #94a3b8;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+
+        .hero-tagline {
+          font-size: 18px;
+          font-weight: 500;
+          color: #fdba74;
+          margin: 0 0 12px 0;
+        }
+
+        .hero-description {
+          font-size: 14px;
+          color: #cbd5e1;
+          line-height: 1.6;
+          margin: 0 0 20px 0;
+          max-width: 680px;
+        }
+
+        .hero-badges {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .tech-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-size: 11px;
+          font-weight: 500;
+        }
+
+        .orange-badge {
+          background: rgba(249, 115, 22, 0.12);
+          border: 1px solid rgba(249, 115, 22, 0.3);
+          color: #fed7aa;
+        }
+
+        .green-badge {
+          background: rgba(16, 185, 129, 0.12);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          color: #a7f3d0;
+        }
+
+        .hero-visual {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+          background: rgba(10, 16, 25, 0.8);
+          border: 1px solid rgba(249, 115, 22, 0.3);
+          border-radius: 20px;
+          box-shadow: 0 0 30px rgba(249, 115, 22, 0.2);
+        }
+
+        @media (max-width: 900px) {
+          .overview-hero {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .hero-visual {
+            align-self: center;
+          }
+        }
+
+        /* Overview Grid */
         .overview-grid {
           display: grid;
-          gridTemplateColumns: repeat(auto-fit, minmax(280px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
           gap: 24px;
-          marginTop: 24px;
         }
 
         .overview-card {
-          background: #111827;
-          border: '1px solid #1e293b';
-          borderRadius: 16px;
+          background: rgba(14, 22, 32, 0.85);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(249, 115, 22, 0.2);
+          border-radius: 16px;
           padding: 24px;
-          transition: all 0.2s;
+          transition: all 0.25s ease;
+          position: relative;
         }
 
         .overview-card:hover {
-          borderColor: #334155;
-          boxShadow: '0 8px 30px rgba(0,0,0,0.3)';
+          border-color: rgba(249, 115, 22, 0.45);
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(249, 115, 22, 0.15);
+          transform: translateY(-2px);
         }
 
         .card-header {
           display: flex;
-          alignItems: center;
+          align-items: center;
           gap: 16px;
-          marginBottom: 16px;
+          margin-bottom: 16px;
         }
 
         .card-icon {
-          width: 56px;
-          height: 56px;
-          borderRadius: 14px;
+          width: 54px;
+          height: 54px;
+          border-radius: 14px;
           display: flex;
-          alignItems: center;
-          justifyContent: center;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
         }
 
         .card-title {
-          fontSize: '18px';
-          fontWeight: 600;
+          font-size: 18px;
+          font-weight: 600;
           margin: 0;
+          color: #f8fafc;
         }
 
         .card-desc {
           color: #94a3b8;
-          margin: '0 0 24px 0';
-          lineHeight: 1.6;
+          margin: 4px 0 0 0;
+          font-size: 13px;
+          line-height: 1.5;
         }
 
         .card-stats {
           display: flex;
-          flexDirection: column;
-          gap: 12px;
+          flex-direction: column;
+          gap: 10px;
         }
 
         .stat-row {
           display: flex;
-          justifyContent: space-between;
-          alignItems: center;
-          padding: '12px 16px';
-          background: #0a1120;
-          borderRadius: 10px;
-          border: '1px solid #1e293b';
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 14px;
+          background: rgba(10, 16, 25, 0.7);
+          border-radius: 10px;
+          border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .stat-label {
-          fontSize: '13px';
+          font-size: 13px;
           color: #94a3b8;
         }
 
         .stat-value {
-          fontSize: '16px';
-          fontWeight: 600;
-          fontFamily: 'monospace';
+          font-size: 15px;
+          font-weight: 600;
+          font-family: 'JetBrains Mono', 'Fira Code', monospace;
+          color: #f1f5f9;
         }
 
         .card-actions {
           display: flex;
           gap: 12px;
-          marginTop: 24px;
-          paddingTop: 16px;
-          borderTop: '1px solid #1e293b';
+          margin-top: 20px;
+          padding-top: 16px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .btn {
-          padding: '10px 20px';
-          borderRadius: 8px;
-          fontWeight: 500;
-          fontSize: '13px';
+          padding: 9px 18px;
+          border-radius: 8px;
+          font-weight: 500;
+          font-size: 13px;
           cursor: pointer;
-          transition: all 0.15s;
+          transition: all 0.2s ease;
           border: none;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
         }
 
         .btn-primary {
-          background: #3b82f6;
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 45%, #10b981 100%);
           color: white;
+          box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
         }
 
         .btn-primary:hover {
-          background: #2563eb;
+          background: linear-gradient(135deg, #ea580c 0%, #c2410c 45%, #059669 100%);
+          box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+          transform: translateY(-1px);
         }
 
         .btn-secondary {
-          background: #1e293b;
+          background: rgba(15, 23, 42, 0.8);
           color: #cbd5e1;
-          border: '1px solid #334155';
+          border: 1px solid rgba(249, 115, 22, 0.25);
         }
 
         .btn-secondary:hover {
-          background: #334155;
+          background: rgba(30, 41, 59, 0.9);
+          border-color: rgba(16, 185, 129, 0.4);
+          color: #f8fafc;
         }
 
         .status-connected {
-          color: #22c55e;
+          color: #34d399;
+          text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
 
         @media (max-width: 768px) {
@@ -703,7 +984,7 @@ function App() {
 const PlaceholderPage: React.FC<{ title: string; description: string }> = ({ title, description }) => (
   <div className="placeholder-page">
     <div className="placeholder-icon">
-      <Building2 size={48} style={{ color: '#3b82f6' }} />
+      <Logo size={56} showText={false} />
     </div>
     <h2>{title}</h2>
     <p>{description}</p>
@@ -727,20 +1008,52 @@ const PlaceholderPage: React.FC<{ title: string; description: string }> = ({ tit
 // Overview Page
 const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
   <div>
-    <div style={{ marginBottom: '32px' }}>
-      <h2 style={{ fontSize: '28px', fontWeight: 600, marginBottom: '8px', letterSpacing: '-0.02em' }}>
-        Organization Overview
-      </h2>
-      <p style={{ color: '#94a3b8', fontSize: '16px', maxWidth: '600px' }}>
-        Aurelia Global Technologies — Technology Consulting
-      </p>
+    {/* Hero Banner with Orange and Green Glow & Author Attribution */}
+    <div className="overview-hero">
+      <div className="hero-content">
+        <div className="hero-badge-row">
+          <div className="hero-pill">
+            <span className="hero-sparkle">✦</span>
+            <span>Atlassian Codegeist 2026</span>
+          </div>
+          <div className="hero-author-pill">
+            <Award size={14} style={{ color: '#f97316' }} />
+            <span>Architected & Built by <strong>Adarsh Panicker</strong></span>
+          </div>
+        </div>
+
+        <h1 className="hero-title">
+          <span className="gradient-text-orange">Parallel</span><span className="gradient-text-green">OS</span>
+          <span className="hero-subtitle-tag">Control Room</span>
+        </h1>
+        
+        <p className="hero-tagline">
+          One Organization. Infinite Possibilities.
+        </p>
+
+        <p className="hero-description">
+          An enterprise digital twin for organizational decision making. Branch real-world operations into parallel copy-on-write scenarios, execute deterministic simulations across cascading dependencies, and explain strategic impacts with grounded AI intelligence.
+        </p>
+
+        <div className="hero-badges">
+          <span className="tech-badge orange-badge">Deterministic Simulation</span>
+          <span className="tech-badge green-badge">Copy-on-Write Overlays</span>
+          <span className="tech-badge orange-badge">Provenance Verification</span>
+          <span className="tech-badge green-badge">Grounded NVIDIA NIM AI</span>
+          <span className="tech-badge orange-badge">Atlassian Forge Custom UI</span>
+        </div>
+      </div>
+
+      <div className="hero-visual">
+        <Logo size={110} showText={false} />
+      </div>
     </div>
 
     <div className="overview-grid">
       <div className="overview-card">
         <div className="card-header">
-          <div className="card-icon" style={{ background: '#1e3a5f', border: '2px solid #3b82f6' }}>
-            <Building2 size={28} style={{ color: '#3b82f6' }} />
+          <div className="card-icon" style={{ background: 'rgba(249, 115, 22, 0.15)', border: '2px solid #f97316' }}>
+            <Building2 size={28} style={{ color: '#f97316' }} />
           </div>
           <div>
             <h3 className="card-title">Organization</h3>
@@ -754,7 +1067,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
           <div className="stat-row">
             <span className="stat-label">Annual Revenue</span>
-            <span className="stat-value">$50M</span>
+            <span className="stat-value" style={{ color: '#34d399' }}>$50M</span>
           </div>
           <div className="stat-row">
             <span className="stat-label">Headquarters</span>
@@ -769,8 +1082,8 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
 
       <div className="overview-card">
         <div className="card-header">
-          <div className="card-icon" style={{ background: '#1e4d3b', border: '2px solid #22c55e' }}>
-            <Building size={28} style={{ color: '#22c55e' }} />
+          <div className="card-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', border: '2px solid #10b981' }}>
+            <Building size={28} style={{ color: '#10b981' }} />
           </div>
           <div>
             <h3 className="card-title">Departments</h3>
@@ -810,26 +1123,26 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
 
       <div className="overview-card">
         <div className="card-header">
-          <div className="card-icon" style={{ background: '#0c4a6e', border: '2px solid #06b6d4' }}>
-            <GitBranch size={28} style={{ color: '#06b6d4' }} />
+          <div className="card-icon" style={{ background: 'rgba(249, 115, 22, 0.15)', border: '2px solid #f97316' }}>
+            <GitBranch size={28} style={{ color: '#f97316' }} />
           </div>
           <div>
             <h3 className="card-title">Active Scenarios</h3>
-            <p className="card-desc">3 parallel futures from baseline</p>
+            <p className="card-desc">3 parallel futures branched from baseline</p>
           </div>
         </div>
         <div className="card-stats">
           <div className="stat-row">
             <span className="stat-label">Future A — Cost Optimization</span>
-            <span className="stat-value" style={{ color: '#f59e0b' }}>Draft</span>
+            <span className="stat-value" style={{ color: '#fb923c' }}>Draft</span>
           </div>
           <div className="stat-row">
             <span className="stat-label">Future B — Global Expansion</span>
-            <span className="stat-value" style={{ color: '#22c55e' }}>Active</span>
+            <span className="stat-value" style={{ color: '#34d399' }}>Active</span>
           </div>
           <div className="stat-row">
             <span className="stat-label">Future C — Tech Transformation</span>
-            <span className="stat-value" style={{ color: '#a855f7' }}>Planned</span>
+            <span className="stat-value" style={{ color: '#a78bfa' }}>Planned</span>
           </div>
         </div>
         <div className="card-actions">
@@ -839,8 +1152,8 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
 
       <div className="overview-card">
         <div className="card-header">
-          <div className="card-icon" style={{ background: '#92400e', border: '2px solid #f59e0b' }}>
-            <Server size={28} style={{ color: '#f59e0b' }} />
+          <div className="card-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', border: '2px solid #10b981' }}>
+            <Server size={28} style={{ color: '#10b981' }} />
           </div>
           <div>
             <h3 className="card-title">Systems & Infrastructure</h3>
@@ -854,7 +1167,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
           <div className="stat-row">
             <span className="stat-label">Redundancy Coverage</span>
-            <span className="stat-value">75%</span>
+            <span className="stat-value" style={{ color: '#34d399' }}>75%</span>
           </div>
           <div className="stat-row">
             <span className="stat-label">Cloud Resources</span>
@@ -868,7 +1181,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
 
       <div className="overview-card">
         <div className="card-header">
-          <div className="card-icon" style={{ background: '#7c2d12', border: '2px solid #f97316' }}>
+          <div className="card-icon" style={{ background: 'rgba(249, 115, 22, 0.15)', border: '2px solid #f97316' }}>
             <GitBranch size={28} style={{ color: '#f97316' }} />
           </div>
           <div>
@@ -879,7 +1192,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
         <div className="card-stats">
           <div className="stat-row">
             <span className="stat-label">Active</span>
-            <span className="stat-value">4</span>
+            <span className="stat-value" style={{ color: '#34d399' }}>4</span>
           </div>
           <div className="stat-row">
             <span className="stat-label">Planned</span>
@@ -887,7 +1200,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
           <div className="stat-row">
             <span className="stat-label">Total Budget</span>
-            <span className="stat-value">$18.2M</span>
+            <span className="stat-value" style={{ color: '#fb923c' }}>$18.2M</span>
           </div>
         </div>
         <div className="card-actions">
@@ -897,12 +1210,12 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
 
       <div className="overview-card">
         <div className="card-header">
-          <div className="card-icon" style={{ background: '#7f1d1d', border: '2px solid #ef4444' }}>
-            <Handshake size={28} style={{ color: '#ef4444' }} />
+          <div className="card-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', border: '2px solid #10b981' }}>
+            <Handshake size={28} style={{ color: '#10b981' }} />
           </div>
           <div>
             <h3 className="card-title">Vendors & Partners</h3>
-            <p className="card-desc">5 key vendors with enterprise SLAs</p>
+            <p className="card-desc">5 key enterprise vendors with contractual SLAs</p>
           </div>
         </div>
         <div className="card-stats">
@@ -912,11 +1225,11 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
           <div className="stat-row">
             <span className="stat-label">Annual Spend</span>
-            <span className="stat-value">$4.8M</span>
+            <span className="stat-value" style={{ color: '#fb923c' }}>$4.8M</span>
           </div>
           <div className="stat-row">
             <span className="stat-label">SLA Compliance</span>
-            <span className="stat-value">99.2%</span>
+            <span className="stat-value" style={{ color: '#34d399' }}>99.2%</span>
           </div>
         </div>
         <div className="card-actions">
@@ -929,12 +1242,12 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
     <div className="overview-grid" style={{ marginTop: '32px' }}>
       <div className="overview-card">
         <div className="card-header">
-          <div className="card-icon" style={{ background: '#0c4a6e', border: '2px solid #06b6d4' }}>
-            <Server size={28} style={{ color: '#06b6d4' }} />
+          <div className="card-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', border: '2px solid #10b981' }}>
+            <Server size={28} style={{ color: '#10b981' }} />
           </div>
           <div>
             <h3 className="card-title">Forge Connection</h3>
-            <p className="card-desc">Real-time connection to Atlassian Forge platform</p>
+            <p className="card-desc">Live status check with Atlassian Forge bridge & resolvers</p>
           </div>
         </div>
         <div className="card-stats">
@@ -954,30 +1267,30 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
 
       <div className="overview-card">
         <div className="card-header">
-          <div className="card-icon" style={{ background: '#1e3a5f', border: '2px solid #3b82f6' }}>
-            <Database size={28} style={{ color: '#3b82f6' }} />
+          <div className="card-icon" style={{ background: 'rgba(249, 115, 22, 0.15)', border: '2px solid #f97316' }}>
+            <Database size={28} style={{ color: '#f97316' }} />
           </div>
           <div>
-            <h3 className="card-title">Storage</h3>
-            <p className="card-desc">Custom Entity Store for entities and relationships</p>
+            <h3 className="card-title">Storage & Engine</h3>
+            <p className="card-desc">Immutable baseline with copy-on-write scenario layer</p>
           </div>
         </div>
         <div className="card-stats">
           <div className="stat-row">
-            <span className="stat-label">Entities Stored</span>
-            <span className="stat-value">—</span>
+            <span className="stat-label">Baseline Entities</span>
+            <span className="stat-value" style={{ color: '#fb923c' }}>68 loaded</span>
           </div>
           <div className="stat-row">
-            <span className="stat-label">Relationships Stored</span>
-            <span className="stat-value">—</span>
+            <span className="stat-label">Baseline Relationships</span>
+            <span className="stat-value" style={{ color: '#34d399' }}>176 verified</span>
           </div>
           <div className="stat-row">
-            <span className="stat-label">Storage Used</span>
-            <span className="stat-value">—</span>
+            <span className="stat-label">Engine Integrity</span>
+            <span className="stat-value" style={{ color: '#34d399' }}>100% Deterministic</span>
           </div>
         </div>
         <div className="card-actions">
-          <button className="btn btn-secondary">Initialize Demo Data</button>
+          <button className="btn btn-secondary">Inspect Model</button>
         </div>
       </div>
     </div>

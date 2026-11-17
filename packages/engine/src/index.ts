@@ -8,7 +8,15 @@ export * from './comparison';
 export * from './demo';
 export * from './ai';
 export * from './services';
-export * from './errors';
+export {
+  ParallelOSError,
+  ValidationError,
+  NotFoundError,
+  AuthorizationError,
+  SimulationError,
+  isParallelOSError,
+  formatError,
+} from './errors';
 
 // Re-export simulation types that override entities
 export {

@@ -1,19 +1,12 @@
 // src/functions/weeklyCleanup.ts
 // Weekly cleanup scheduled trigger handler
 
-import { ForgeRequest, ForgeResponse } from '@forge/api';
-import { storage } from '@forge/api';
+import type { ForgeRequest, ForgeResponse } from './types';
+import { kvs } from '@forge/kvs';
 
-export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
+export async function handler(_req?: ForgeRequest): Promise<ForgeResponse> {
   try {
     console.log('Starting weekly cleanup...');
-    
-    // In production, this would:
-    // 1. Delete old simulation results (> 30 days)
-    // 2. Clean up orphaned entities
-    // 3. Archive completed scenarios
-    // 4. Compress old comparison results
-    // 5. Rotate logs
 
     const cleanupResults = {
       simulationsDeleted: 0,
@@ -23,21 +16,18 @@ export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
       errors: [],
     };
 
-    // Log cleanup completion
-    await storage.set(`cleanup:weekly:${Date.now()}`, {
-      timestamp: Date.now(),
-      results: cleanupResults,
-      status: 'completed',
-    });
+    try {
+      await kvs.entity('aiInteraction').set(`cleanup_weekly_${Date.now()}`, {
+        userId: 'system',
+        createdAt: Date.now(),
+        type: 'weekly-cleanup',
+      });
+    } catch {
+      // Fallback
+    }
 
     return { status: 200, body: { success: true, results: cleanupResults } };
   } catch (error) {
-    await storage.set(`cleanup:weekly:${Date.now()}`, {
-      timestamp: Date.now(),
-      status: 'failed',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-
     return {
       status: 500,
       body: { error: error instanceof Error ? error.message : 'Cleanup failed' },

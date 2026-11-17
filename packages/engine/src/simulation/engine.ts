@@ -173,8 +173,8 @@ function identifyUnresolvedDependencies(context: SimulationContext): UnresolvedD
       const cycleStart = path.indexOf(entityId);
       const cycle = path.slice(cycleStart);
       for (let i = 0; i < cycle.length; i++) {
-        const source = cycle[i];
-        const target = cycle[(i + 1) % cycle.length];
+        const source = cycle[i] ?? '';
+        const target = cycle[(i + 1) % cycle.length] ?? '';
         unresolved.push({
           sourceEntityId: source,
           targetEntityId: target,
@@ -228,6 +228,7 @@ export function validateDecisions(decisions: SimulationDecision[]): { valid: boo
   
   for (let i = 0; i < decisions.length; i++) {
     const decision = decisions[i];
+    if (!decision) continue;
     
     if (!decision.id) {
       errors.push(`Decision ${i}: missing id`);
@@ -251,46 +252,47 @@ export function validateDecisions(decisions: SimulationDecision[]): { valid: boo
 
 function validateDecisionParameters(decision: SimulationDecision): string[] {
   const errors: string[] = [];
+  const p = decision.parameters;
   
   switch (decision.type) {
     case DecisionType.BudgetChange:
-      if (typeof decision.parameters.percentChange !== 'number') {
+      if (typeof p['percentChange'] !== 'number') {
         errors.push('percentChange must be a number');
-      } else if (decision.parameters.percentChange < -100 || decision.parameters.percentChange > 500) {
+      } else if ((p['percentChange'] as number) < -100 || (p['percentChange'] as number) > 500) {
         errors.push('percentChange must be between -100 and 500');
       }
-      if (!decision.parameters.budgetId) {
+      if (!p['budgetId']) {
         errors.push('budgetId is required');
       }
       break;
       
     case DecisionType.AddLocation:
-      if (!decision.parameters.name) errors.push('name is required');
-      if (!decision.parameters.address) errors.push('address is required');
-      if (!decision.parameters.timezone) errors.push('timezone is required');
-      if (typeof decision.parameters.capacity !== 'number') errors.push('capacity must be a number');
+      if (!p['name']) errors.push('name is required');
+      if (!p['address']) errors.push('address is required');
+      if (!p['timezone']) errors.push('timezone is required');
+      if (typeof p['capacity'] !== 'number') errors.push('capacity must be a number');
       break;
       
     case DecisionType.ReplaceSystem:
-      if (!decision.parameters.currentSystemId) errors.push('currentSystemId is required');
-      if (!decision.parameters.newSystemName) errors.push('newSystemName is required');
-      if (!decision.parameters.newSystemVendorId) errors.push('newSystemVendorId is required');
-      if (typeof decision.parameters.migrationDurationDays !== 'number') errors.push('migrationDurationDays must be a number');
+      if (!p['currentSystemId']) errors.push('currentSystemId is required');
+      if (!p['newSystemName']) errors.push('newSystemName is required');
+      if (!p['newSystemVendorId']) errors.push('newSystemVendorId is required');
+      if (typeof p['migrationDurationDays'] !== 'number') errors.push('migrationDurationDays must be a number');
       break;
       
     case DecisionType.SystemOutage:
-      if (!decision.parameters.systemId) errors.push('systemId is required');
-      if (typeof decision.parameters.durationHours !== 'number') errors.push('durationHours must be a number');
+      if (!p['systemId']) errors.push('systemId is required');
+      if (typeof p['durationHours'] !== 'number') errors.push('durationHours must be a number');
       break;
       
     case DecisionType.RestructureDepartment:
-      if (!decision.parameters.departmentId) errors.push('departmentId is required');
+      if (!p['departmentId']) errors.push('departmentId is required');
       break;
       
     case DecisionType.ReallocateResources:
-      if (!decision.parameters.fromResourceId) errors.push('fromResourceId is required');
-      if (!decision.parameters.toResourceId) errors.push('toResourceId is required');
-      if (typeof decision.parameters.amount !== 'number') errors.push('amount must be a number');
+      if (!p['fromResourceId']) errors.push('fromResourceId is required');
+      if (!p['toResourceId']) errors.push('toResourceId is required');
+      if (typeof p['amount'] !== 'number') errors.push('amount must be a number');
       break;
   }
   

@@ -1,41 +1,27 @@
 // src/functions/webhookHandler.ts
 // Jira webhook handler for real-time updates
 
-import { ForgeRequest, ForgeResponse } from '@forge/api';
-import { storage } from '@forge/api';
+import type { ForgeRequest, ForgeResponse} from './types';
+import { parseRequestBody } from './types';
+import { kvs } from '@forge/kvs';
 
 export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
-  const body = await req.json();
-  
-  // Verify webhook secret if configured
-  // const signature = req.headers.get('x-hub-signature');
-  // if (!verifySignature(signature, JSON.stringify(body))) {
-  //   return { status: 401, body: { error: 'Invalid signature' } };
-  // }
+  const body = await parseRequestBody(req);
 
   try {
-    const { webhookEvent, issue, project, changelog } = body;
+    const { webhookEvent, issue } = body;
 
-    // Store webhook event for audit
-    await storage.set(`webhook:${Date.now()}`, {
-      event: webhookEvent,
-      issueKey: issue?.key,
-      projectKey: project?.key,
-      timestamp: Date.now(),
-      payload: body,
-    });
-
-    // Handle different event types
-    switch (webhookEvent) {
-      case 'jira:issue_created':
-      case 'jira:issue_updated':
-        // Could trigger scenario re-evaluation
-        console.log(`Issue ${issue?.key} ${webhookEvent}`);
-        break;
-      case 'jira:issue_deleted':
-        console.log(`Issue ${issue?.key} deleted`);
-        break;
+    try {
+      await kvs.entity('aiInteraction').set(`webhook_${Date.now()}`, {
+        userId: 'system',
+        createdAt: Date.now(),
+        type: webhookEvent || 'webhook',
+      });
+    } catch {
+      // Fallback
     }
+
+    console.log(`Issue ${issue?.key} ${webhookEvent}`);
 
     return { status: 200, body: { received: true } };
   } catch (error) {

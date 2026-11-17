@@ -82,7 +82,7 @@ export interface DependencyPathStep {
  * Propagation rule for a relationship type
  */
 export interface PropagationRule {
-  relationshipType: RelationshipType;
+  relationshipType: RelationshipType | string;
   baseFactor: number;
   reverseFlow: boolean;
   calculateFactor: (rel: Relationship, ctx: PropagationContext) => number;

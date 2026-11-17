@@ -253,7 +253,7 @@ const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
     <div style={{ 
       width: '100%', 
       height: '100vh', 
-      background: '#0f172a', 
+      background: 'radial-gradient(circle at 10% 12%, rgba(249, 115, 22, 0.14) 0%, transparent 45%), radial-gradient(circle at 90% 88%, rgba(16, 185, 129, 0.14) 0%, transparent 45%), #090e13', 
       position: 'relative',
       overflow: 'hidden',
     }}>
@@ -294,19 +294,20 @@ const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
           top: error ? '72px' : '16px',
           left: '50%',
           transform: 'translateX(-50%)',
-          background: '#111827',
-          border: '1px solid #3b82f6',
+          background: 'rgba(14, 22, 32, 0.95)',
+          border: '1px solid rgba(249, 115, 22, 0.4)',
           color: '#f8fafc',
           padding: '16px 24px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 20px rgba(59, 130, 246, 0.2)',
+          borderRadius: '12px',
+          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(249, 115, 22, 0.2)',
           zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
           gap: '16px',
           maxWidth: '90vw',
+          backdropFilter: 'blur(10px)',
         }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8"/></svg>
           <span style={{ flex: 1 }}>
             Welcome to ParallelOS Organization Twin. Click below to load the Aurelia Global Technologies demo data.
           </span>
@@ -314,14 +315,15 @@ const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
             onClick={handleInitializeDemo}
             disabled={initializing}
             style={{
-              background: '#3b82f6',
+              background: 'linear-gradient(135deg, #f97316 0%, #10b981 100%)',
               border: 'none',
               color: '#ffffff',
               padding: '10px 20px',
-              borderRadius: '6px',
+              borderRadius: '8px',
               fontWeight: 600,
               cursor: initializing ? 'not-allowed' : 'pointer',
               opacity: initializing ? 0.7 : 1,
+              boxShadow: '0 4px 14px rgba(249, 115, 22, 0.4)',
             }}
           >
             {initializing ? (

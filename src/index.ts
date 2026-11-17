@@ -1,13 +1,13 @@
 import Resolver from '@forge/resolver';
 import { kvs } from '@forge/kvs';
 import { z } from 'zod';
-import { 
-  loadAureliaDemo, 
-  aureliaEntities, 
-  aureliaRelationships,
+import type {
   Entity,
   Relationship,
-  EntityType,
+  EntityType} from '@parallelos/engine';
+import { 
+  aureliaEntities, 
+  aureliaRelationships
 } from '@parallelos/engine';
 
 // Define the entity schema for our demo storage test
@@ -18,11 +18,6 @@ const TestEntitySchema = z.object({
 });
 
 type TestEntity = z.infer<typeof TestEntitySchema>;
-
-type CursorResult<T> = {
-  results: T[];
-  nextCursor: string | undefined;
-};
 
 const resolver = new Resolver();
 
@@ -77,9 +72,9 @@ resolver.define('listTestEntities', async () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const cursor = await (queryBuilder as any).getMany();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const results = (cursor as any).results || [];
+  const results = (cursor).results || [];
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const nextCursor = (cursor as any).nextCursor;
+  const nextCursor = (cursor).nextCursor;
   return { entities: results, nextCursor };
 });
 
@@ -127,7 +122,7 @@ resolver.define('getEntities', async (req) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const cursor = await (queryBuilder as any).getMany();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const allEntities = ((cursor as any).results || []) as Entity[];
+    const allEntities = ((cursor).results || []) as Entity[];
     
     let filtered = allEntities;
     if (type) {
@@ -167,7 +162,7 @@ resolver.define('getEntity', async (req) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const relCursor = await (relQueryBuilder as any).getMany();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const allRels = ((relCursor as any).results || []) as Relationship[];
+    const allRels = ((relCursor).results || []) as Relationship[];
     
     const relationships = allRels.filter(r => r.sourceId === id || r.targetId === id);
     
@@ -196,7 +191,7 @@ resolver.define('getRelationships', async (req) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const cursor = await (queryBuilder as any).getMany();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const allRels = ((cursor as any).results || []) as Relationship[];
+    const allRels = ((cursor).results || []) as Relationship[];
     
     let filtered = allRels;
     if (sourceId) filtered = filtered.filter(r => r.sourceId === sourceId);
@@ -227,7 +222,7 @@ resolver.define('searchEntities', async (req) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const cursor = await (queryBuilder as any).getMany();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const allEntities = ((cursor as any).results || []) as Entity[];
+    const allEntities = ((cursor).results || []) as Entity[];
     
     const lowerQuery = query.toLowerCase();
     let results = allEntities.filter(e => 
@@ -263,7 +258,7 @@ resolver.define('getGraphData', async (req) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const entityCursor = await (entityQueryBuilder as any).getMany();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    let entities = ((entityCursor as any).results || []) as Entity[];
+    let entities = ((entityCursor).results || []) as Entity[];
     
     if (entityTypes && entityTypes.length > 0) {
       entities = entities.filter(e => entityTypes.includes(e.type));
@@ -278,7 +273,7 @@ resolver.define('getGraphData', async (req) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const relCursor = await (relQueryBuilder as any).getMany();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const allRels = ((relCursor as any).results || []) as Relationship[];
+    const allRels = ((relCursor).results || []) as Relationship[];
     
     // Filter relationships to only those between loaded entities
     const relationships = allRels.filter(r => 

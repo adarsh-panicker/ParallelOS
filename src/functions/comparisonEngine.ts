@@ -1,16 +1,15 @@
 // src/functions/comparisonEngine.ts
 // Comparison engine function handler
 
-import { ForgeRequest, ForgeResponse } from '@forge/api';
-import { compareScenarios, ComparisonResult } from '../../engine/src/comparison';
+import type { ForgeRequest, ForgeResponse } from './types';
+import { parseRequestBody } from './types';
+import type { ComparisonResult } from '@parallelos/engine';
 
 export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
-  const body = await req.json();
-  const { baselineScenarioId, scenarioIds, customWeights } = body;
+  const body = await parseRequestBody(req);
+  const { baselineScenarioId, scenarioIds, customWeights: _customWeights } = body;
 
   try {
-    // In production, fetch simulations from storage
-    // For now, return mock comparison
     const mockComparison: ComparisonResult = {
       id: `comparison-${Date.now()}`,
       baselineScenarioId,

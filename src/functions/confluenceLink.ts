@@ -1,14 +1,14 @@
 // src/functions/confluenceLink.ts
 // Confluence document linking function handler
 
-import { ForgeRequest, ForgeResponse } from '@forge/api';
+import type { ForgeRequest, ForgeResponse} from './types';
+import { parseRequestBody } from './types';
 
 export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
-  const body = await req.json();
+  const body = await parseRequestBody(req);
   const { entityId, pageId, linkedBy } = body;
 
   try {
-    // In production, call Confluence REST API
     return {
       status: 200,
       body: {

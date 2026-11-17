@@ -1,14 +1,14 @@
 // src/functions/confluenceReport.ts
 // Confluence report storage function handler
 
-import { ForgeRequest, ForgeResponse } from '@forge/api';
+import type { ForgeRequest, ForgeResponse} from './types';
+import { parseRequestBody } from './types';
 
 export async function handler(req: ForgeRequest): Promise<ForgeResponse> {
-  const body = await req.json();
-  const { scenarioId, comparisonId, title, content, spaceKey, parentPageId, labels = [] } = body;
+  const body = await parseRequestBody(req);
+  const { scenarioId: _scenarioId, comparisonId: _comparisonId, title, content: _content, spaceKey, parentPageId: _parentPageId, labels: _labels = [] } = body;
 
   try {
-    // In production, call Confluence REST API to create page
     const pageId = `page-${Date.now()}`;
     
     return {

@@ -1,9 +1,7 @@
 // packages/engine/src/scenario/engine/engine.ts
 
 import {
-  Entity,
   EntityId,
-  Relationship,
   RelationshipId,
   VersionId,
   ScenarioId,
@@ -12,7 +10,8 @@ import {
   EntityState,
   VerificationStatus,
 } from '../../entities/types';
-import { Relationship as RelType } from '../../relationships/types';
+import { Entity } from '../../entities';
+import { Relationship } from '../../relationships';
 import {
   Scenario,
   Assumption,
@@ -20,9 +19,7 @@ import {
   RelationshipOverride,
   AppliedDecision,
   ScenarioVersion,
-  Entity as ScenarioEntity,
-  Relationship as ScenarioRelationship,
-} from '../schemas';
+} from '../types';
 import {
   ScenarioContext,
   ResolvedEntity,
@@ -339,7 +336,7 @@ export function getScenarioContext(scenarioId: ScenarioId): ScenarioEngineResult
         targetId: override.newData.targetId as EntityId,
         type: override.newData.type as any,
         direction: override.newData.direction as any,
-        criticality: override.newData.criticality || 'medium',
+        criticality: override.newData.criticality || Criticality.Medium,
         dependencyStrength: override.newData.dependencyStrength || 'soft',
         redundancyInfo: override.newData.redundancyInfo,
         confidence: override.newData.confidence || 1,
@@ -356,14 +353,14 @@ export function getScenarioContext(scenarioId: ScenarioId): ScenarioEngineResult
   }
   
   // Build adjacency lists
-  const { outbound, inbound } = buildAdjacencyLists(resolvedRelationships);
+  const { outbound, inbound } = buildAdjacencyLists(resolvedRelationships as any);
   
   return {
     success: true,
     data: {
       scenario,
-      baselineEntities: baselineEntitiesMap,
-      baselineRelationships: baselineRelsMap,
+      baselineEntities: baselineEntitiesMap as any,
+      baselineRelationships: baselineRelsMap as any,
       resolvedEntities,
       resolvedRelationships,
       outboundEdges: outbound,
@@ -471,11 +468,11 @@ export function applyRelationshipOverride(
     relationshipId: relationshipId as RelationshipId,
     operation,
     previousVersion: baselineRel?.version,
-    newData: newData ? {
+    newData: newData ? ({
       ...otherData,
-      sourceId: sourceId || (baselineRel?.sourceId as EntityId) || '',
-      targetId: targetId || (baselineRel?.targetId as EntityId) || '',
-    } : undefined,
+      sourceId: (sourceId || baselineRel?.sourceId || '') as EntityId,
+      targetId: (targetId || baselineRel?.targetId || '') as EntityId,
+    } as any) : undefined,
     appliedAt: Date.now(),
     appliedBy: 'system',
   };
@@ -511,7 +508,7 @@ export function addAssumption(
     key,
     value,
     description,
-    source,
+    source: source as ValueSource.Assumed | ValueSource.AiHypothesis,
     confidence,
     createdAt: Date.now(),
     createdBy: 'system',

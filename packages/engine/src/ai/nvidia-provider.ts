@@ -14,6 +14,7 @@ import {
   ExplanationError,
   RecommendationError,
 } from './types';
+import { SimulationResult } from '../simulation/types';
 import { 
   ScenarioProposalSchema, 
   ExplanationSchema, 
@@ -315,7 +316,7 @@ RULES:
         if (!response.ok) {
           let errorDetail = '';
           try {
-            const errorBody = await response.json();
+            const errorBody = (await response.json()) as any;
             errorDetail = errorBody.error?.message || JSON.stringify(errorBody);
           } catch {
             errorDetail = await response.text();

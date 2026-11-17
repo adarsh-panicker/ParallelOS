@@ -87,7 +87,7 @@ export interface TaskProposal {
   issueType: 'Task' | 'Story' | 'Epic';
   assigneeId?: string;
   labels: string[];
-  customFields: Record<string, unknown>;
+  customFields?: Record<string, unknown>;
   scenarioReference: {
     scenarioId: ScenarioId;
     simulationResultId: string;
