@@ -6,14 +6,50 @@
 
 ---
 
-## 🌟 Overview
+## 🌟 What Does ParallelOS Do?
 
-**ParallelOS** is an enterprise digital twin control room built for Atlassian Cloud (Forge Custom UI). It enables leaders, architects, and engineering managers to branch their organization into parallel scenarios, run deterministic simulations across cascading dependencies, compare counterfactual futures, and turn approved decisions directly into real Jira work.
+**ParallelOS** is an enterprise digital twin control room built for Atlassian Cloud (Forge Custom UI). It transforms how leadership, engineering managers, and enterprise architects make strategic organizational decisions:
 
-- **Not a Jira dashboard and not a chatbot**: A visual control room where users navigate an interactive organizational dependency graph (React Flow), edit assumptions, execute simulations, evaluate multi-dimensional impact scorecards, and consult grounded AI to explain trade-offs.
-- **Strictly Deterministic**: The simulation engine is 100% deterministic TypeScript. The LLM never invents numbers or calculates outcomes.
-- **Copy-on-Write Scenario Branching**: Baseline organizational data is strictly immutable. Scenarios overlay entity and relationship modifications with complete provenance tracking.
-- **Grounded AI Interpretation**: AI (NVIDIA NIM) only interprets natural-language requests into validated structured proposals and explains engine-computed diffs.
+- **Not a Jira Dashboard, Not a Chatbot**: A high-fidelity mission control room where decision-makers view the entire organization as an active, interconnected dependency graph.
+- **Branch Reality into Parallel Scenarios**: Create isolated, counterfactual future branches from your baseline organization (e.g., cutting budget, opening international offices, replacing critical software).
+- **100% Deterministic Simulation**: Built in pure TypeScript with zero AI hallucinations. Ripple effects—from project delays to cascading system outages—propagate through graph dependencies with cycle safety and redundancy awareness.
+- **Comparative Multi-Dimensional Scorecards**: Compare scenarios side-by-side across 9 enterprise dimensions with customizable priority weights.
+- **Grounded AI Explanations**: Uses NVIDIA NIM solely to translate plain English into structured decision proposals and explain differences using verified simulation data with complete mathematical provenance.
+- **Turn Decisions into Real Jira Work**: Bridge approved scenarios directly back into the enterprise by creating linked Jira remediation tasks with strict confirmation approval gates.
+
+---
+
+## 📺 Video Walkthrough
+
+> 🎬 **Watch the full demonstration on YouTube:**  
+> *(Record and upload your walkthrough, then replace the link below)*  
+> [![Watch the ParallelOS Demo Video](docs/screenshots/01-control-room-overview.png)](https://www.youtube.com/watch?v=YOUR_YOUTUBE_VIDEO_ID)
+
+*A complete, step-by-step 5-minute video recording script with scene-by-scene voiceover narration and visual cues is available locally in `DEMO_VIDEO_SCRIPT.md`.*
+
+---
+
+## 📸 Visual Walkthrough & Screenshots
+
+### 1. Control Room Overview
+The main control room dashboard featuring organization health, active scenario status, system redundancy metrics, and the custom radiant orange & emerald green ambient glow theme.
+![Control Room Overview](docs/screenshots/01-control-room-overview.png)
+
+### 2. Organization Twin (Interactive Graph Canvas)
+A visual dependency graph powered by React Flow. Navigate departments, employees, business systems, cloud assets, and vendors with type-based filtering and instant node inspection.
+![Organization Twin](docs/screenshots/02-organization-twin.png)
+
+### 3. Scenario Lab (Copy-on-Write Branching)
+Branch the organization into parallel futures without mutating the baseline. Manage assumptions, configure overrides, and trigger deterministic simulations.
+![Scenario Lab](docs/screenshots/03-scenario-lab.png)
+
+### 4. Compare Futures (9-Dimension Scorecard)
+Evaluate scenarios side-by-side across operating cost, resilience, project delivery, and complexity. Adjust weighting sliders to observe live ranking recalculations with full provenance tracking.
+![Compare Futures](docs/screenshots/04-compare-futures.png)
+
+### 5. Settings & Creator Attribution
+Manage system preferences, model configurations, and review the technical architecture and author attribution in the "About & Creator" tab.
+![Settings & Creator](docs/screenshots/05-settings-about.png)
 
 ---
 

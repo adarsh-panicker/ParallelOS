@@ -38,3 +38,15 @@ coverage/
 
 # TypeScript
 *.tsbuildinfo
+
+# Local videos, recordings & demo scripts (do not commit to Git)
+*.mp4
+*.mov
+*.webm
+*.mkv
+*.avi
+recordings/
+videos/
+DEMO_VIDEO_SCRIPT.md
+*demo_script*
+*video_script*
