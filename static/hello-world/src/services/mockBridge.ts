@@ -95,6 +95,28 @@ export function setupMockBridge() {
       return { entities: results.slice(0, limit), total: results.length };
     }
 
+    if (fn === 'syncJiraProjects') {
+      return { success: true, projectsCount: 9, mappedEntitiesCount: 32, timestamp: Date.now() };
+    }
+
+    if (fn === 'exportConfluenceReport') {
+      return { 
+        success: true, 
+        reportId: 'report-future-a', 
+        pageTitle: 'Strategic Comparison — Future A vs Baseline', 
+        format: 'ADF',
+        timestamp: Date.now() 
+      };
+    }
+
+    if (fn === 'testRovoAction') {
+      return { success: true, action: payload?.action || 'runScenario', certified: true, gateStatus: 'enforced' };
+    }
+
+    if (fn === 'verifyNvidiaNim') {
+      return { success: true, model: 'meta/llama-3.1-70b-instruct', status: 'healthy', grounded: true };
+    }
+
     return { status: 200, body: {} };
   };
 

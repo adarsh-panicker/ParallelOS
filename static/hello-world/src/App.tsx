@@ -9,6 +9,7 @@ import { CompareFutures } from './pages/CompareFutures';
 import { ScenarioLab } from './pages/ScenarioLab';
 import { SimulationHistory } from './pages/SimulationHistory';
 import { SettingsPage } from './pages/Settings';
+import { IntegrationsPage } from './pages/Integrations';
 import { Logo } from './components/Logo';
 import './index.css';
 
@@ -58,7 +59,7 @@ function App() {
       case 'twin':
         return <OrganizationTwin />;
       case 'overview':
-        return <OverviewPage health={health} />;
+        return <OverviewPage health={health} onNavigate={setCurrentPage} />;
       case 'scenario':
         return <ScenarioLab />;
       case 'compare':
@@ -68,9 +69,9 @@ function App() {
       case 'settings':
         return <SettingsPage />;
       case 'integrations':
-        return <PlaceholderPage title="Integrations" description="Jira, Confluence, Rovo, NVIDIA NIM connections" />;
+        return <IntegrationsPage />;
       default:
-        return <OverviewPage health={health} />;
+        return <OverviewPage health={health} onNavigate={setCurrentPage} />;
     }
   };
 
@@ -980,33 +981,8 @@ function App() {
   );
 }
 
-// Placeholder Page Component
-const PlaceholderPage: React.FC<{ title: string; description: string }> = ({ title, description }) => (
-  <div className="placeholder-page">
-    <div className="placeholder-icon">
-      <Logo size={56} showText={false} />
-    </div>
-    <h2>{title}</h2>
-    <p>{description}</p>
-    <div className="placeholder-stats">
-      <div className="stat-item">
-        <div className="stat-value">—</div>
-        <div className="stat-label">Entities</div>
-      </div>
-      <div className="stat-item">
-        <div className="stat-value">—</div>
-        <div className="stat-label">Relationships</div>
-      </div>
-      <div className="stat-item">
-        <div className="stat-value">—</div>
-        <div className="stat-label">Scenarios</div>
-      </div>
-    </div>
-  </div>
-);
-
 // Overview Page
-const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
+const OverviewPage: React.FC<{ health: any; onNavigate: (page: Page) => void }> = ({ health, onNavigate }) => (
   <div>
     {/* Hero Banner with Orange and Green Glow & Author Attribution */}
     <div className="overview-hero">
@@ -1075,8 +1051,8 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
         </div>
         <div className="card-actions">
-          <button className="btn btn-primary">View Details</button>
-          <button className="btn btn-secondary">Edit</button>
+          <button className="btn btn-primary" onClick={() => onNavigate('twin')}>View Graph</button>
+          <button className="btn btn-secondary" onClick={() => onNavigate('settings')}>Settings</button>
         </div>
       </div>
 
@@ -1117,7 +1093,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
         </div>
         <div className="card-actions">
-          <button className="btn btn-primary">Manage Departments</button>
+          <button className="btn btn-primary" onClick={() => onNavigate('twin')}>Explore Departments</button>
         </div>
       </div>
 
@@ -1146,7 +1122,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
         </div>
         <div className="card-actions">
-          <button className="btn btn-primary">Open Scenario Lab</button>
+          <button className="btn btn-primary" onClick={() => onNavigate('scenario')}>Open Scenario Lab</button>
         </div>
       </div>
 
@@ -1175,7 +1151,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
         </div>
         <div className="card-actions">
-          <button className="btn btn-primary">View Architecture</button>
+          <button className="btn btn-primary" onClick={() => onNavigate('twin')}>View Systems in Twin</button>
         </div>
       </div>
 
@@ -1204,7 +1180,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
         </div>
         <div className="card-actions">
-          <button className="btn btn-primary">View Projects</button>
+          <button className="btn btn-primary" onClick={() => onNavigate('compare')}>Compare Futures</button>
         </div>
       </div>
 
@@ -1233,7 +1209,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
         </div>
         <div className="card-actions">
-          <button className="btn btn-primary">Vendor Management</button>
+          <button className="btn btn-primary" onClick={() => onNavigate('integrations')}>Integrations Hub</button>
         </div>
       </div>
     </div>
@@ -1278,11 +1254,11 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
         <div className="card-stats">
           <div className="stat-row">
             <span className="stat-label">Baseline Entities</span>
-            <span className="stat-value" style={{ color: '#fb923c' }}>68 loaded</span>
+            <span className="stat-value" style={{ color: '#fb923c' }}>121 loaded</span>
           </div>
           <div className="stat-row">
             <span className="stat-label">Baseline Relationships</span>
-            <span className="stat-value" style={{ color: '#34d399' }}>176 verified</span>
+            <span className="stat-value" style={{ color: '#34d399' }}>215 verified</span>
           </div>
           <div className="stat-row">
             <span className="stat-label">Engine Integrity</span>
@@ -1290,7 +1266,7 @@ const OverviewPage: React.FC<{ health: any }> = ({ health }) => (
           </div>
         </div>
         <div className="card-actions">
-          <button className="btn btn-secondary">Inspect Model</button>
+          <button className="btn btn-secondary" onClick={() => onNavigate('twin')}>Inspect Baseline Twin</button>
         </div>
       </div>
     </div>
