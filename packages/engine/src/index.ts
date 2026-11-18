@@ -19,8 +19,8 @@ export {
 } from './errors';
 
 // Re-export simulation types that override entities
+export type { UnknownValue } from './simulation/provenance';
 export {
-  UnknownValue,
   isUnknown,
   unknown,
   safeGetProperty,

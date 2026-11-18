@@ -52,28 +52,35 @@ const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
     setError(null);
     try {
       const data = await getGraphData({ entityTypes: entityTypes as any, maxNodes: 200 });
-      if (data.error) throw new Error(data.error);
+      if (data?.error) throw new Error(data.error);
       
-      const newNodes: GraphNode[] = data.nodes.map((entity, index) => ({
+      const safeNodes = data?.nodes || [];
+      const safeEdges = data?.edges || [];
+
+      const newNodes: GraphNode[] = safeNodes.map((entity, index) => ({
         id: entity.id,
         type: 'entityNode',
-        position: { x: (index % 20) * 220, y: Math.floor(index / 20) * 160 },
-        data: { label: entity.name, entity },
+        position: { x: (index % 12) * 260, y: Math.floor(index / 12) * 200 },
+        data: { 
+          label: entity.name, 
+          entity,
+          onClick: (ent: any) => loadEntityDetails(ent.id),
+        },
       }));
       
-      const newEdges: GraphEdge[] = data.edges.map(rel => ({
+      const newEdges: GraphEdge[] = safeEdges.map(rel => ({
         id: rel.id,
         source: rel.sourceId,
         target: rel.targetId,
         type: 'relationshipEdge',
-        label: rel.type.replace(/_/g, ' '),
+        label: (rel.type || 'related_to').replace(/_/g, ' '),
         data: { relationship: rel },
       }));
       
       setNodes(newNodes);
       setEdges(newEdges);
-      setNodeCount(data.totalNodes);
-      setEdgeCount(data.totalEdges);
+      setNodeCount(data?.totalNodes ?? safeNodes.length);
+      setEdgeCount(data?.totalEdges ?? safeEdges.length);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load graph data');
     } finally {
@@ -127,14 +134,16 @@ const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
       searchTimeoutRef.current = setTimeout(async () => {
         try {
           const result = await searchEntities({ query, limit: 10 });
-          setSearchResults(result.entities);
+          setSearchResults(result?.entities || []);
           setShowSearchResults(true);
         } catch (err) {
           console.error('Search failed:', err);
+          setSearchResults([]);
         }
       }, 300);
     } else {
       setShowSearchResults(false);
+      setSearchResults([]);
     }
   };
 
@@ -142,10 +151,11 @@ const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
     if (query.length < 2) return;
     try {
       const result = await searchEntities({ query, limit: 20 });
-      setSearchResults(result.entities);
+      setSearchResults(result?.entities || []);
       setShowSearchResults(true);
     } catch (err) {
       console.error('Search failed:', err);
+      setSearchResults([]);
     }
   };
 
@@ -389,7 +399,7 @@ const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
         onExportImage={exportImage}
       />
 
-      {showSearchResults && searchResults.length > 0 && (
+      {showSearchResults && Array.isArray(searchResults) && searchResults.length > 0 && (
         <div style={{
           position: 'absolute',
           top: '72px',

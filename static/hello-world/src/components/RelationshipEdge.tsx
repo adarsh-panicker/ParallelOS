@@ -1,37 +1,8 @@
 // Custom Relationship Edge Component for React Flow
 
 import React from 'react';
-import { EdgeTypes, BaseEdge } from '@xyflow/react';
-import { Relationship, RELATIONSHIP_TYPE_COLORS } from '../types';
-
-interface RelationshipEdgeProps {
-  id: string;
-  source: string;
-  target: string;
-  type?: string;
-  data?: {
-    relationship: import('../types').Relationship;
-  };
-  style?: React.CSSProperties;
-}
-
-const RELATIONSHIP_LABELS: Record<string, string> = {
-  belongs_to: 'belongs to',
-  manages: 'manages',
-  owns: 'owns',
-  depends_on: 'depends on',
-  blocks: 'blocks',
-  feeds: 'feeds',
-  runs_on: 'runs on',
-  hosts: 'hosts',
-  connects_to: 'connects to',
-  supplied_by: 'supplied by',
-  located_at: 'located at',
-  serves: 'serves',
-  funds: 'funds',
-  allocated_to: 'allocated to',
-  custom: 'custom',
-};
+import { BaseEdge, getBezierPath, type EdgeProps } from '@xyflow/react';
+import { RELATIONSHIP_TYPE_COLORS } from '../types';
 
 const RELATIONSHIP_STYLE: Record<string, { strokeDasharray?: string; strokeWidth: number }> = {
   belongs_to: { strokeWidth: 2 },
@@ -51,45 +22,49 @@ const RELATIONSHIP_STYLE: Record<string, { strokeDasharray?: string; strokeWidth
   custom: { strokeWidth: 1 },
 };
 
-export const RelationshipEdge = ({
+export const RelationshipEdge: React.FC<EdgeProps> = ({
   id,
-  source,
-  target,
-  data,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
   style = {},
-}: RelationshipEdgeProps) => {
-  const relationship = data?.relationship;
+  markerEnd,
+  data,
+}) => {
+  const [edgePath] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  const relationship = (data as any)?.relationship;
   const type = relationship?.type || 'custom';
   const color = RELATIONSHIP_TYPE_COLORS[type as keyof typeof RELATIONSHIP_TYPE_COLORS] || '#6b7280';
-  const label = RELATIONSHIP_LABELS[type] || type;
-  const edgeStyle = RELATIONSHIP_STYLE[type] || { strokeWidth: 1 };
-  
-  const isHard = relationship?.dependencyStrength === 'hard';
+  const strokeConfig = RELATIONSHIP_STYLE[type as keyof typeof RELATIONSHIP_STYLE] || { strokeWidth: 1 };
 
   return (
-    <svg
+    <BaseEdge
       id={id}
+      path={edgePath}
+      markerEnd={markerEnd}
       style={{
-        position: 'absolute',
         stroke: color,
-        strokeWidth: RELATIONSHIP_STYLE[type as keyof typeof RELATIONSHIP_STYLE]?.strokeWidth || 1,
-        strokeDasharray: RELATIONSHIP_STYLE[type as keyof typeof RELATIONSHIP_STYLE]?.strokeDasharray,
+        strokeWidth: strokeConfig.strokeWidth || 1,
+        strokeDasharray: strokeConfig.strokeDasharray,
         ...style,
       }}
-    >
-      <line
-        x1={0}
-        y1={0}
-        x2={100}
-        y2={0}
-        markerEnd="url(#arrowhead)"
-      />
-    </svg>
+    />
   );
 };
 
 export const edgeTypes = {
   relationshipEdge: RelationshipEdge,
-} satisfies EdgeTypes;
+};
 
 export default RelationshipEdge;

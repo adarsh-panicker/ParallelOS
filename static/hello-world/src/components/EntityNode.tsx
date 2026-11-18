@@ -32,13 +32,22 @@ const ENTITY_ICONS_MAP: Record<string, React.FC<{ size?: number }>> = {
 };
 
 export const EntityNode: React.FC<{ data: { entity: import('../types').Entity; onClick?: (entity: import('../types').Entity) => void } }> = ({ data }) => {
+  if (!data || !data.entity) return null;
+
   const { entity, onClick } = data;
-  const colors = ENTITY_TYPE_COLORS[entity.type];
-  const Icon = ENTITY_ICONS_MAP[entity.type] as any;
+  const entityType = entity.type || 'organization';
+  const colors = ENTITY_TYPE_COLORS[entityType] || { bg: '#1e293b', border: '#64748b' };
+  const Icon = (ENTITY_ICONS_MAP[entityType] || Circle) as any;
+  const safeProperties = (entity.properties && typeof entity.properties === 'object') ? entity.properties : {};
+  const safeCriticality = entity.criticality || 'medium';
+  const safeSource = entity.source || 'actual';
+  const safeName = entity.name || 'Unnamed Entity';
 
   const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onClick) onClick(entity);
+    if (onClick) {
+      e.stopPropagation();
+      onClick(entity);
+    }
   };
 
   const getCriticalityColor = (criticality: string) => {
@@ -60,6 +69,9 @@ export const EntityNode: React.FC<{ data: { entity: import('../types').Entity; o
       default: return '#6b7280';
     }
   };
+
+  const propEntries = Object.entries(safeProperties);
+  const propKeysCount = Object.keys(safeProperties).length;
 
   return (
     <div 
@@ -89,41 +101,27 @@ export const EntityNode: React.FC<{ data: { entity: import('../types').Entity; o
           fontWeight: 600,
           textTransform: 'uppercase',
         }}>
-          {entity.type.toUpperCase().replace(/_/g, ' ').slice(0, 4)}
+          {entityType.toUpperCase().replace(/_/g, ' ').slice(0, 4)}
         </span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '4px' }}>
           {/* Criticality indicator */}
           <div 
+            title={`Criticality: ${safeCriticality}`}
             style={{ 
               width: '8px', 
               height: '8px', 
               borderRadius: '50%', 
-              background: (() => {
-                switch (entity.criticality) {
-                  case 'critical': return '#ef4444';
-                  case 'high': return '#f97316';
-                  case 'medium': return '#f59e0b';
-                  default: return '#22c55e';
-                }
-              })(),
+              background: getCriticalityColor(safeCriticality),
             }} 
           />
           {/* Source indicator */}
           <div 
+            title={`Source: ${safeSource}`}
             style={{ 
               width: '8px', 
               height: '8px', 
               borderRadius: '50%', 
-              background: (() => {
-                switch (entity.source) {
-                  case 'actual': return '#22c55e';
-                  case 'imported': return '#3b82f6';
-                  case 'assumed': return '#f59e0b';
-                  case 'ai-hypothesis': return '#a855f7';
-                  case 'simulated': return '#ef4444';
-                  default: return '#6b7280';
-                }
-              })(),
+              background: getSourceColor(safeSource),
             }} 
           />
         </div>
@@ -139,7 +137,7 @@ export const EntityNode: React.FC<{ data: { entity: import('../types').Entity; o
         overflow: 'hidden',
         textOverflow: 'ellipsis',
       }}>
-        {entity.name}
+        {safeName}
       </h3>
 
       {/* Description */}
@@ -158,42 +156,44 @@ export const EntityNode: React.FC<{ data: { entity: import('../types').Entity; o
       )}
 
       {/* Key properties */}
-      <div style={{ 
-        display: 'flex', 
-        flexWrap: 'wrap', 
-        gap: '6px',
-        marginTop: '8px',
-        paddingTop: '8px',
-        borderTop: '1px solid rgba(148, 163, 184, 0.2)',
-      }}>
-        {Object.entries(entity.properties).slice(0, 4).map(([key, value]) => (
-          <span 
-            key={key}
-            style={{ 
+      {propKeysCount > 0 && (
+        <div style={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: '6px',
+          marginTop: '8px',
+          paddingTop: '8px',
+          borderTop: '1px solid rgba(148, 163, 184, 0.2)',
+        }}>
+          {propEntries.slice(0, 4).map(([key, value]) => (
+            <span 
+              key={key}
+              style={{ 
+                background: 'rgba(148, 163, 184, 0.1)', 
+                color: '#94a3b8', 
+                padding: '2px 6px', 
+                borderRadius: '4px', 
+                fontSize: '10px',
+                fontFamily: 'monospace',
+              }}
+              title={`${key}: ${String(value)}`}
+            >
+              {key}: {String(value).slice(0, 20)}
+            </span>
+          ))}
+          {propKeysCount > 4 && (
+            <span style={{ 
               background: 'rgba(148, 163, 184, 0.1)', 
-              color: '#94a3b8', 
+              color: '#64748b', 
               padding: '2px 6px', 
               borderRadius: '4px', 
               fontSize: '10px',
-              fontFamily: 'monospace',
-            }}
-            title={`${key}: ${String(value)}`}
-          >
-            {key}: {String(value).slice(0, 20)}
-          </span>
-        ))}
-        {Object.keys(entity.properties).length > 4 && (
-          <span style={{ 
-            background: 'rgba(148, 163, 184, 0.1)', 
-            color: '#64748b', 
-            padding: '2px 6px', 
-            borderRadius: '4px', 
-            fontSize: '10px',
-          }}>
-            +{Object.keys(entity.properties).length - 4} more
-          </span>
-        )}
-      </div>
+            }}>
+              +{propKeysCount - 4} more
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Connection handles */}
       <Handle type="target" position={Position.Left} style={{ background: colors.border }} />

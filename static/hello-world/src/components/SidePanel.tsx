@@ -44,14 +44,20 @@ const formatPropertyValue = (value: unknown): string => {
   return String(value);
 };
 
-export const SidePanel: React.FC<SidePanelProps> = ({ entity, relationships, onClose, onNavigateToEntity }) => {
+export const SidePanel: React.FC<SidePanelProps> = ({ entity, relationships = [], onClose, onNavigateToEntity }) => {
   if (!entity) return null;
 
-  const colors = ENTITY_TYPE_COLORS[entity.type];
-  const typeLabel = entity.type.toUpperCase().replace(/_/g, ' ');
+  const entityType = entity.type || 'organization';
+  const colors = ENTITY_TYPE_COLORS[entityType] || { bg: '#1e293b', border: '#64748b' };
+  const typeLabel = entityType.toUpperCase().replace(/_/g, ' ');
+  const safeProperties = (entity.properties && typeof entity.properties === 'object') ? entity.properties : {};
+  const safeVersion = typeof entity.version === 'string' ? entity.version : '1.0.0';
+  const safeCriticality = entity.criticality || 'medium';
+  const safeSource = entity.source || 'actual';
+  const safeName = entity.name || 'Unnamed Entity';
 
-  const outboundRels = relationships.filter(r => r.sourceId === entity.id);
-  const inboundRels = relationships.filter(r => r.targetId === entity.id);
+  const outboundRels = (relationships || []).filter(r => r && r.sourceId === entity.id);
+  const inboundRels = (relationships || []).filter(r => r && r.targetId === entity.id);
 
   return (
     <div className="side-panel" style={{
@@ -91,7 +97,7 @@ export const SidePanel: React.FC<SidePanelProps> = ({ entity, relationships, onC
           </div>
           <div>
             <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#f8fafc' }}>
-              {entity.name}
+              {safeName}
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
               <span style={{
@@ -102,27 +108,27 @@ export const SidePanel: React.FC<SidePanelProps> = ({ entity, relationships, onC
                 fontSize: '10px',
                 fontWeight: 600,
               }}>
-                {entity.type.toUpperCase().replace(/_/g, ' ')}
+                {typeLabel}
               </span>
               <span style={{
-                background: '#ef4444',
-                color: '#fef2f2',
+                background: safeCriticality === 'critical' ? '#ef4444' : safeCriticality === 'high' ? '#f97316' : '#22c55e',
+                color: '#ffffff',
                 padding: '2px 8px',
                 borderRadius: '4px',
                 fontSize: '10px',
                 fontWeight: 500,
               }}>
-                {entity.criticality.toUpperCase()}
+                {safeCriticality.toUpperCase()}
               </span>
               <span style={{
-                background: '#22c55e',
-                color: '#f0fdf4',
+                background: '#10b981',
+                color: '#ffffff',
                 padding: '2px 8px',
                 borderRadius: '4px',
                 fontSize: '10px',
                 fontWeight: 500,
               }}>
-                Actual
+                {safeSource.toUpperCase()}
               </span>
             </div>
           </div>
@@ -162,25 +168,25 @@ export const SidePanel: React.FC<SidePanelProps> = ({ entity, relationships, onC
             Properties
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <PropertyRow label="ID" value={entity.id} copyable />
-            <PropertyRow label="Type" value={entity.type} />
-            <PropertyRow label="State" value={entity.state} />
-            <PropertyRow label="Version" value={entity.version.slice(0, 8)} copyable />
-            <PropertyRow label="Created" value={new Date(entity.createdAt).toLocaleString()} />
-            <PropertyRow label="Updated" value={new Date(entity.updatedAt).toLocaleString()} />
-            <PropertyRow label="Created By" value={entity.createdBy} />
-            <PropertyRow label="Updated By" value={entity.updatedBy} />
+            <PropertyRow label="ID" value={entity.id || 'N/A'} copyable />
+            <PropertyRow label="Type" value={entityType} />
+            <PropertyRow label="State" value={entity.state || 'active'} />
+            <PropertyRow label="Version" value={safeVersion.slice(0, 8)} copyable />
+            <PropertyRow label="Created" value={entity.createdAt ? new Date(entity.createdAt).toLocaleString() : 'N/A'} />
+            <PropertyRow label="Updated" value={entity.updatedAt ? new Date(entity.updatedAt).toLocaleString() : 'N/A'} />
+            <PropertyRow label="Created By" value={entity.createdBy || 'system'} />
+            <PropertyRow label="Updated By" value={entity.updatedBy || 'system'} />
           </div>
         </div>
 
-        {Object.keys(entity.properties).length > 0 && (
+        {Object.keys(safeProperties).length > 0 && (
           <div style={{ marginBottom: '24px' }}>
             <h3 style={{ margin: '0 0 12px 0', fontSize: '12px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Custom Properties
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              {Object.entries(entity.properties).map(([key, value]) => (
-                <PropertyRow key={key} label={key} value={String(value)} />
+              {Object.entries(safeProperties).map(([key, value]) => (
+                <PropertyRow key={key} label={key} value={formatPropertyValue(value)} />
               ))}
             </div>
           </div>
@@ -306,12 +312,12 @@ const RelationshipRow = ({
   onNavigate?: (entityId: string) => void;
 }) => {
   const isOutbound = direction === 'outbound';
-  const otherEntityId = isOutbound ? relationship.targetId : relationship.sourceId;
-  const arrow = '→';
+  const otherEntityId = (isOutbound ? relationship?.targetId : relationship?.sourceId) || '';
+  const relType = (relationship?.type || 'related_to').replace(/_/g, ' ');
   
   return (
     <button
-      onClick={() => onNavigate?.(otherEntityId)}
+      onClick={() => otherEntityId && onNavigate?.(otherEntityId)}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -320,7 +326,7 @@ const RelationshipRow = ({
         background: '#111827',
         border: '1px solid #1e293b',
         borderRadius: '6px',
-        cursor: 'pointer',
+        cursor: otherEntityId ? 'pointer' : 'default',
         textAlign: 'left',
         width: '100%',
         transition: 'all 0.2s',
@@ -340,14 +346,14 @@ const RelationshipRow = ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
       }}>
-        {relationship.type.replace(/_/g, ' ')}
+        {relType}
       </span>
       <span style={{ 
         fontSize: '10px', 
         color: '#64748b',
         fontFamily: 'monospace',
       }}>
-        {otherEntityId.slice(0, 8)}...
+        {otherEntityId ? `${otherEntityId.slice(0, 8)}...` : 'unknown'}
       </span>
     </button>
   );
