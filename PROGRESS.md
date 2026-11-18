@@ -118,6 +118,19 @@
   - Themed entire app with orange & green glowing background aesthetics, radial gradients, glowing borders, and card accents.
   - Prominently credited the author: **"Made by Adarsh Panicker"** across the top bar pill, sidebar footer badge, Overview Hero control room banner, and Settings "About & Creator" section.
 
+- **Local Browser Preview & Null-Safety Hardening completed:**
+  - Resolved `cannot load properties error` (`TypeError: Cannot read properties of undefined`):
+    - Fortified `SidePanel.tsx` with complete null checks on `properties`, `version`, `criticality`, `source`, `name`, dates, and relationship endpoints.
+    - Fortified `EntityNode.tsx` with null-safe accessors, safe property mappings, and event propagation handling.
+    - Updated `RelationshipEdge.tsx` using `@xyflow/react` standard `BaseEdge` and `getBezierPath` for curved graph edge rendering.
+    - Created `static/hello-world/src/services/mockBridge.ts` bridging the 68 Aurelia entities and 176 relationships to `@forge/bridge` when running outside the Forge iframe.
+    - Handled `@forge/bridge` invocation protocol (`callBridge('invoke', { functionKey, payload })`) so `getGraphData`, `getEntity`, `searchEntities`, `initializeDemoData`, and `healthCheck` return real organizational twin data.
+  - End-to-end automated verification with Playwright confirmed:
+    - 121 graph nodes rendered.
+    - Side panel opens on node selection and displays full metadata and custom properties.
+    - Search toolbar functions smoothly ("Finance" query returned 2 matches).
+    - All 7 pages (Overview, Organization Twin, Scenario Lab, Compare Futures, Simulation History, Integrations, Settings) navigate with zero console or page errors.
+
 ## Completed Verification
 - Pure TypeScript engine build: `npm --prefix packages/engine run build` -> 0 errors.
 - Vitest suite: `npm --prefix packages/engine test` -> 125/125 passing.
