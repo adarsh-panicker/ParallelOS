@@ -2,172 +2,172 @@ app:
   id: ari:cloud:ecosystem::app/parallelos-codegeist-2026
   runtime:
     name: nodejs24.x
-  permissions:
-    scopes:
-      - read:jira-work
-      - write:jira-work
-      - read:jira-user
-      - read:confluence-content.all
-      - write:confluence-content
-      - read:confluence-space.summary
-      - storage:app
-    external:
-      fetch:
-        backend:
-          - 'integrate.api.nvidia.com'
-          - 'api.nvidia.com'
-          - 'build.nvidia.com'
-  modules:
-    jira:globalPage:
-      - key: parallelos-main
-        title: ParallelOS
+permissions:
+  scopes:
+    - read:jira-work
+    - write:jira-work
+    - read:jira-user
+    - read:confluence-content.all
+    - write:confluence-content
+    - read:confluence-space.summary
+    - storage:app
+  external:
+    fetch:
+      backend:
+        - 'integrate.api.nvidia.com'
+        - 'api.nvidia.com'
+        - 'build.nvidia.com'
+modules:
+  jira:globalPage:
+    - key: parallelos-main
+      title: ParallelOS
+      resource: main
+      resolver:
+        function: resolver
+      icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
+  jira:projectPage:
+    - key: parallelos-project
+      title: ParallelOS
+      resource: project
+      resolver:
+        function: resolver
+      position: left
+      icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
+  confluence:spacePage:
+    - key: parallelos-space
+      title: ParallelOS
+      resource: confluence
+      resolver:
+        function: resolver
+      icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
+  function:
+    - key: resolver
+      handler: index.handler
+    - key: jira-import
+      handler: jiraImport.handler
+    - key: jira-tasks
+      handler: jiraTasks.handler
+    - key: confluence-link
+      handler: confluenceLink.handler
+    - key: confluence-report
+      handler: confluenceReport.handler
+    - key: scenario-crud
+      handler: scenarioCrud.handler
+    - key: simulation-engine
+      handler: simulationEngine.handler
+    - key: comparison-engine
+      handler: comparisonEngine.handler
+    - key: ai-service
+      handler: aiService.handler
+    - key: webhook-handler
+      handler: webhookHandler.handler
+    - key: scheduled-sync
+      handler: scheduledSync.handler
+  webTrigger:
+    - key: jira-webhook
+      handler: jiraWebhook.handler
+      description: Handles Jira issue update webhooks
+  scheduledTrigger:
+    - key: daily-sync
+      handler: dailySync.handler
+      schedule: '0 2 * * *'  # 2 AM daily
+      description: Daily Jira/Confluence sync
+    - key: weekly-cleanup
+      handler: weeklyCleanup.handler
+      schedule: '0 3 * * 0'  # 3 AM Sunday
+      description: Weekly cleanup of old simulation results
+  storage:
+    entity:
+      - key: scenario
+        name: Scenario
+        indexedFields:
+          - name
+          - status
+          - parentScenarioId
+          - createdAt
+      - key: entity
+        name: Entity
+        indexedFields:
+          - type
+          - name
+          - scenarioId
+          - externalId
+      - key: relationship
+        name: Relationship
+        indexedFields:
+          - sourceId
+          - targetId
+          - type
+          - scenarioId
+      - key: simulationResult
+        name: SimulationResult
+        indexedFields:
+          - scenarioId
+          - executedAt
+          - status
+      - key: comparisonResult
+        name: ComparisonResult
+        indexedFields:
+          - baselineScenarioId
+          - generatedAt
+      - key: assumption
+        name: Assumption
+        indexedFields:
+          - scenarioId
+          - key
+      - key: entityOverride
+        name: EntityOverride
+        indexedFields:
+          - scenarioId
+          - entityId
+      - key: relationshipOverride
+        name: RelationshipOverride
+        indexedFields:
+          - scenarioId
+          - sourceId
+          - targetId
+      - key: appliedDecision
+        name: AppliedDecision
+        indexedFields:
+          - scenarioId
+          - type
+      - key: scenarioVersion
+        name: ScenarioVersion
+        indexedFields:
+          - scenarioId
+          - createdAt
+      - key: aiInteraction
+        name: AIInteraction
+        indexedFields:
+          - userId
+          - createdAt
+          - type
+  rovo:agent:
+    - key: parallelos-intelligence
+      name: ParallelOS Intelligence
+      description: |
+        Run organizational simulations, compare parallel futures, and create approved Jira tasks from simulation findings.
+      avatar: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
+      actions:
+        - runScenario
+        - compareScenarios
+        - createJiraTasks
+      promptTemplates:
+        - "What happens if we reduce the IT budget by 15%?"
+        - "Compare our three organizational futures."
+        - "Which systems are most critical to our operations?"
+        - "What are the consequences of expanding into two countries?"
+        - "Explain why Future B has a higher operational cost."
+        - "Which assumptions have the greatest impact on our results?"
+        - "Create Jira tasks for the approved remediation recommendations."
+  ui:
+    custom:
+      - key: main
         resource: main
-        resolver:
-          function: resolver
-        icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
-    jira:projectPage:
-      - key: parallelos-project
-        title: ParallelOS
+      - key: project
         resource: project
-        resolver:
-          function: resolver
-        position: left
-        icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
-    confluence:spacePage:
-      - key: parallelos-space
-        title: ParallelOS
+      - key: confluence
         resource: confluence
-        resolver:
-          function: resolver
-        icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
-    function:
-      - key: resolver
-        handler: index.handler
-      - key: jira-import
-        handler: jiraImport.handler
-      - key: jira-tasks
-        handler: jiraTasks.handler
-      - key: confluence-link
-        handler: confluenceLink.handler
-      - key: confluence-report
-        handler: confluenceReport.handler
-      - key: scenario-crud
-        handler: scenarioCrud.handler
-      - key: simulation-engine
-        handler: simulationEngine.handler
-      - key: comparison-engine
-        handler: comparisonEngine.handler
-      - key: ai-service
-        handler: aiService.handler
-      - key: webhook-handler
-        handler: webhookHandler.handler
-      - key: scheduled-sync
-        handler: scheduledSync.handler
-    webTrigger:
-      - key: jira-webhook
-        handler: jiraWebhook.handler
-        description: Handles Jira issue update webhooks
-    scheduledTrigger:
-      - key: daily-sync
-        handler: dailySync.handler
-        schedule: '0 2 * * *'  # 2 AM daily
-        description: Daily Jira/Confluence sync
-      - key: weekly-cleanup
-        handler: weeklyCleanup.handler
-        schedule: '0 3 * * 0'  # 3 AM Sunday
-        description: Weekly cleanup of old simulation results
-    storage:
-      entity:
-        - key: scenario
-          name: Scenario
-          indexedFields:
-            - name
-            - status
-            - parentScenarioId
-            - createdAt
-        - key: entity
-          name: Entity
-          indexedFields:
-            - type
-            - name
-            - scenarioId
-            - externalId
-        - key: relationship
-          name: Relationship
-          indexedFields:
-            - sourceId
-            - targetId
-            - type
-            - scenarioId
-        - key: simulationResult
-          name: SimulationResult
-          indexedFields:
-            - scenarioId
-            - executedAt
-            - status
-        - key: comparisonResult
-          name: ComparisonResult
-          indexedFields:
-            - baselineScenarioId
-            - generatedAt
-        - key: assumption
-          name: Assumption
-          indexedFields:
-            - scenarioId
-            - key
-        - key: entityOverride
-          name: EntityOverride
-          indexedFields:
-            - scenarioId
-            - entityId
-        - key: relationshipOverride
-          name: RelationshipOverride
-          indexedFields:
-            - scenarioId
-            - sourceId
-            - targetId
-        - key: appliedDecision
-          name: AppliedDecision
-          indexedFields:
-            - scenarioId
-            - type
-        - key: scenarioVersion
-          name: ScenarioVersion
-          indexedFields:
-            - scenarioId
-            - createdAt
-        - key: aiInteraction
-          name: AIInteraction
-          indexedFields:
-            - userId
-            - createdAt
-            - type
-    rovo:agent:
-      - key: parallelos-intelligence
-        name: ParallelOS Intelligence
-        description: |
-          Run organizational simulations, compare parallel futures, and create approved Jira tasks from simulation findings.
-        avatar: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
-        actions:
-          - runScenario
-          - compareScenarios
-          - createJiraTasks
-        promptTemplates:
-          - "What happens if we reduce the IT budget by 15%?"
-          - "Compare our three organizational futures."
-          - "Which systems are most critical to our operations?"
-          - "What are the consequences of expanding into two countries?"
-          - "Explain why Future B has a higher operational cost."
-          - "Which assumptions have the greatest impact on our results?"
-          - "Create Jira tasks for the approved remediation recommendations."
-    ui:
-      custom:
-        - key: main
-          resource: main
-        - key: project
-          resource: project
-        - key: confluence
-          resource: confluence
 resources:
   - key: main
     path: static/hello-world/build
